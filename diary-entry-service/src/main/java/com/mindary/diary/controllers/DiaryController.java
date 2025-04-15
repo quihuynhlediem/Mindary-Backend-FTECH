@@ -1,13 +1,11 @@
 package com.mindary.diary.controllers;
 
-import com.mindary.diary.dto.AnalysisResultDto;
 import com.mindary.diary.dto.DiaryDto;
 import com.mindary.diary.mappers.Mapper;
 import com.mindary.diary.models.DiaryEntity;
 import com.mindary.diary.models.DiaryImage;
 import com.mindary.diary.services.DiaryImageService;
 import com.mindary.diary.services.DiaryService;
-import com.mindary.diary.services.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +39,6 @@ public class DiaryController {
     private final DiaryService diaryService;
     private final Mapper<DiaryEntity, DiaryDto> diaryMapper;
     private final DiaryImageService diaryImageService;
-    private final RabbitMQSender rabbitMQSender;
 
     @Operation(summary = "Get diaries by user ID", description = "Retrieve a paginated list of diaries for a specific user.")
     @ApiResponses(value = {
@@ -112,27 +109,28 @@ public class DiaryController {
     })
     @PreAuthorize("#userId.toString() == authentication.name")
     @PostMapping(path = "/user/{userId}")
-    public ResponseEntity<AnalysisResultDto> createDiary(
+    public ResponseEntity<DiaryDto> createDiary(
             @PathVariable("userId") UUID userId,
             @RequestParam("diary") String diary,
             @RequestParam(value = "images", required = false) List<MultipartFile> photos,
             @RequestParam(value = "timezone") String timezone
     ) throws Exception {
         log.info("Creating diary");
+
         Optional<DiaryEntity> existingDiary = diaryService.findByUserIdAndDate(userId, timezone);
 
         if (existingDiary.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new AnalysisResultDto());
+                    .body(diaryMapper.mapTo(existingDiary.get()));
         }
+
         DiaryEntity savedDiary = diaryService.create(userId, diary);
+
         Set<DiaryImage> savedImages = diaryImageService.uploadAndSaveImages(photos, savedDiary);
+
         savedDiary.setImages(savedImages);
-        rabbitMQSender.sendDiary(savedDiary);
 
-        AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(analysisResultDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(diaryMapper.mapTo(savedDiary));
     }
 
     @Operation(summary = "Create a diary on a target date", description = "Create a diary entry for a user on a specific date.")
@@ -168,10 +166,9 @@ public class DiaryController {
         }
 
         DiaryEntity savedDiary = diaryService.create(userId, diary);
+
         Set<DiaryImage> savedDiaryImages = diaryImageService.uploadAndSaveImages(images, savedDiary);
         savedDiary.setImages(savedDiaryImages);
-
-        AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(diaryMapper.mapTo(savedDiary));
     }

@@ -1,5 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc'
-import config from "./config.js";
+import config from "./config/config.js";
 import swaggerUi from "swagger-ui-express";
 
 const options = {
