@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 // import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     {timestamps: true}
 );
 
-export const User = mongoose.models.users || mongoose.model("users", userSchema);
+export const User: Model<IUser> = mongoose.models.users || mongoose.model<IUser>("users", userSchema);
 
 export const getUsers = () => User.find();
 export const getUserByEmail = (email: string) => User.findOne({ email });

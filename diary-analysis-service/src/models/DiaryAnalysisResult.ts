@@ -1,60 +1,55 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
-const diarySchema = new mongoose.Schema(
+export interface IDiaryAnalysisResult extends Document {
+    userId: string;
+    diaryId: string;
+    emotionObjects: {
+        emotionLevel: string;
+        emotionCategory: string;
+        emotionSummary: string;
+    }[];
+    correlationObjects: {
+        name: string;
+        description: string;
+    }[];
+    symptomObjects: {
+        name: string;
+        risk: string;
+        description: string;
+        suggestions: string;
+    }[];
+}
+
+const diarySchema: Schema<IDiaryAnalysisResult> = new Schema(
     {
-        userId: {
-            type: String,
-        },
-        diaryId: {
-            type: String,
-        },
+        userId: { type: String, required: true },
+        diaryId: { type: String, required: true },
         emotionObjects: [
             {
-                type: Object,
-                emotionLevel: {
-                    type: String,
-                },
-                emotionCategory: {
-                    type: String,
-                },
-                emotionSummary: {
-                    type: String,
-                }
+                emotionLevel: { type: String },
+                emotionCategory: { type: String },
+                emotionSummary: { type: String },
             }
         ],
         correlationObjects: [
             {
-                type: Object,
-                name: {
-                    type: String,
-                },
-                description: {
-                    type: String,
-                },
+                name: { type: String },
+                description: { type: String },
             }
         ],
-
         symptomObjects: [
             {
-                type: Object,
-                name: {
-                    type: String,
-                },
-                risk: {
-                    type: String,
-                },
-                description: {
-                    type: String,
-                },
-                suggestions: {
-                    type: String,
-                }
+                name: { type: String },
+                risk: { type: String },
+                description: { type: String },
+                suggestions: { type: String },
             }
         ],
     },
-    {timestamps: true}
+    { timestamps: true }
 );
 
-const DiaryAnalysisResult = mongoose.models.diaries || mongoose.model("diaries", diarySchema);
+const DiaryAnalysisResult: Model<IDiaryAnalysisResult> =
+    mongoose.models.diaries || mongoose.model<IDiaryAnalysisResult>("diaries", diarySchema);
 
 export default DiaryAnalysisResult;
