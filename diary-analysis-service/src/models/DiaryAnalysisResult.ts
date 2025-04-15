@@ -22,12 +22,12 @@ export interface IDiaryAnalysisResult extends Document {
 
 const diarySchema: Schema<IDiaryAnalysisResult> = new Schema(
     {
-        userId: { type: String, required: true },
-        diaryId: { type: String, required: true },
+        userId: { type: String },
+        diaryId: { type: String },
         emotionObjects: [
             {
                 emotionLevel: { type: String },
-                emotionCategory: { type: String },
+                emotionCategory: [{ type: String }],
                 emotionSummary: { type: String },
             }
         ],

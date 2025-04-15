@@ -155,7 +155,7 @@ export const analyzeDiaryEntry = async (
         }
 
         const newDiary = new DiaryAnalysisResult({
-            senderId: userId,
+            userId: userId,
             diaryId: diaryId,
             emotionObjects: [{
                 emotionLevel: analysisResult.emotion.emotionLevel,
