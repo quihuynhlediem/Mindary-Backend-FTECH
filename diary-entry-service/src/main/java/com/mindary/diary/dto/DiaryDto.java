@@ -26,6 +26,10 @@ public class DiaryDto {
 
     private String content;
 
+    private String aesKey;
+
+    private String aesIv;
+
     private UUID userId;
 
     private Set<DiaryImageDto> images;

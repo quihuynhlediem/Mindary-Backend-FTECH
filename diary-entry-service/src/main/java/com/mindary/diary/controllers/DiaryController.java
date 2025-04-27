@@ -3,6 +3,7 @@ package com.mindary.diary.controllers;
 import com.mindary.diary.dto.AnalysisResultDto;
 import com.mindary.diary.dto.DiaryDto;
 import com.mindary.diary.mappers.Mapper;
+import com.mindary.diary.models.DecryptAESKeyRequest;
 import com.mindary.diary.models.DiaryEntity;
 import com.mindary.diary.models.DiaryImage;
 import com.mindary.diary.services.DiaryImageService;
@@ -171,7 +172,7 @@ public class DiaryController {
         Set<DiaryImage> savedDiaryImages = diaryImageService.uploadAndSaveImages(images, savedDiary);
         savedDiary.setImages(savedDiaryImages);
 
-        AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
+//        AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(diaryMapper.mapTo(savedDiary));
     }
@@ -201,5 +202,31 @@ public class DiaryController {
                 diaryMapper.mapTo(savedDiary),
                 HttpStatus.OK
         );
+    }
+
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @PostMapping(path = "/user/{userId}/decrypt-aes-key")
+    public ResponseEntity<String> decryptAesKey(
+            @PathVariable("userId") UUID userId,
+            @RequestBody DecryptAESKeyRequest decryptAESKeyRequest
+    ) {
+        try {
+            String encryptedAesKey = decryptAESKeyRequest.getEncryptedAESKey();
+            String privateKey = decryptAESKeyRequest.getPrivateKey();
+            log.info("Decrypting aes key");
+            log.info("EncryptedAesKey: {}", encryptedAesKey);
+            log.info("PrivateKey: {}", privateKey);
+            if (encryptedAesKey == null || privateKey == null) {
+                return ResponseEntity.status(400).body("Data not available");
+            }
+            String aesKey = diaryService.decryptAesKey(encryptedAesKey, privateKey);
+            log.info("Decrypted aes key: {}", aesKey);
+            return new ResponseEntity<>(
+                    aesKey,
+                    HttpStatus.OK
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Failed to decrypt AES key: " + e.getMessage());
+        }
     }
 }

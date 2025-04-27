@@ -29,8 +29,16 @@ public class DiaryEntity {
     private UUID id;
 
     @NotBlank(message = "Diary content should not be empty")
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
+
+    @NotBlank(message = "Diary encrypt key should not be empty")
+    @Column(name = "aes_key", columnDefinition = "TEXT")
+    private String aesKey;
+
+    @NotBlank(message = "IV should not be empty")
+    @Column(name = "iv", columnDefinition = "TEXT")
+    private String aesIv;
 
     @Column(name = "user_id")
     private UUID userId;

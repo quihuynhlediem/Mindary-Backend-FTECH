@@ -14,5 +14,9 @@ public class SignUpRequest {
     private String username;
     private String password;
     private String email;
+    private String publicKey;
+    private String salt;
+    private String encryptedPrivateKey;
+    private String privateKeyIv;
     private User.UserRole role;
 }
