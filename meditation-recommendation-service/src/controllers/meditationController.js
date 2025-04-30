@@ -1,5 +1,33 @@
 import MeditationService from '../services/meditationService.js';
 
+const fetchAllTrackIds = async (req, res) => {
+    try {
+        const data = await MeditationService.fetchAllTrackIds();  // Fetch some data
+        res.status(200).json(data);  // Send response with a status code and data
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+}
+const fetchTrackDataWithId = async (req, res) => {
+    try {
+        const data = await MeditationService.fetchTrackDataWithId(req.params.id);  // Fetch some data
+        res.status(200).json(data);  // Send response with a status code and data
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ message: 'Internal server error' });  
+    }
+}
+
+const fetchTrackData = async (req, res) => {
+    try {
+        const data = await MeditationService.fetchTrackData();  // Fetch some data
+        return res.status(200).json(data);  // Send response with a status code and data
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ message: 'Internal server error' });  
+    }
+}
 const createMeditation = async (req, res) => {
     try {
         const { title, content } = req.body;
@@ -128,6 +156,9 @@ const deleteMeditation = async (req, res) => {
 
 
 export default {
+    fetchAllTrackIds,
+    fetchTrackDataWithId,
+    fetchTrackData,
     createMeditation,
     createMultipleMeditations,
     getAllMeditations,

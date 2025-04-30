@@ -3,11 +3,6 @@ import mongoose from 'mongoose';
 
 const embeddingSchema = new mongoose.Schema(
     {
-        
-        _id: { 
-            type: String, 
-            required: true 
-        },
         useCase: { 
             type: String, 
             required: true 
@@ -18,6 +13,7 @@ const embeddingSchema = new mongoose.Schema(
         },
         _meditationId: { 
             type: mongoose.Schema.Types.ObjectId,
+            // type: String,
             ref: 'Meditation',
             required: true, 
         },

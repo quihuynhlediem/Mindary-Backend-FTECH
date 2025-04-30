@@ -3,12 +3,32 @@ import mongoose from 'mongoose';
 
 const meditationSchema = new mongoose.Schema(
     {
+        id: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        slug: { 
+            type: String, 
+            required: true, 
+            trim: true 
+        },
         title: { 
             type: String, 
             required: true, 
             trim: true 
         },
-        content: { 
+        author: { 
+            type: String, 
+            required: true, 
+            trim: true 
+        },
+        transcripts: { 
+            type: String, 
+            required: true, 
+            trim: true 
+        },
+        description: { 
             type: String, 
             required: true, 
             trim: true 
