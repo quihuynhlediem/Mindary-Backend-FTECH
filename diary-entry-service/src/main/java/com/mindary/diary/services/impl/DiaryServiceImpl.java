@@ -55,16 +55,24 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     public DiaryEntity create(UUID userId, String diary) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
+        // Retrieve user's public key
         String publicKeyBase64 = getUserPublicKey(userId);
         PublicKey publicKey = decodePublicKey(publicKeyBase64);
+
+        // Generate new AES key and IV
         byte[] aesKeyBytes = generateAESKeyBytes();
         SecretKeySpec aesKey = generateRandomAESKey(aesKeyBytes);
         byte[] ivBytes = generateIvBytes();
         String iv = generateIv(ivBytes);
+
+        // Create AES cipher and encrypt diary content
         Cipher aesCipher = createAESCipher(aesKey, ivBytes);
         String encryptDiary = encryptDiary(aesCipher, diary);
+
+        // Encrypt AES key with user's public key
         String encryptAESKey = encryptAESKey(aesKeyBytes, publicKey);
 
+        // Saved the user's diary with encrypted content and encrypted AES Key
         DiaryEntity diaryEntity = DiaryEntity.builder()
                 .userId(userId)
                 .content(encryptDiary)
@@ -151,9 +159,38 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public DiaryEntity partialUpdate(UUID diaryId,DiaryEntity diaryEntity) {
+    public DiaryEntity partialUpdate(UUID diaryId, DiaryEntity diaryEntity) {
         return diaryRepository.findById(diaryId).map(existingDiary -> {
-            Optional.ofNullable(existingDiary.getContent()).ifPresent(existingDiary::setContent);
+            // Check if new content is provided
+            if (diaryEntity.getContent() != null) {
+                try {
+                    // Retrieve user's public key
+                    String publicKeyBase64 = getUserPublicKey(existingDiary.getUserId());
+                    PublicKey publicKey = decodePublicKey(publicKeyBase64);
+
+                    // Generate new AES key and IV
+                    byte[] aesKeyBytes = generateAESKeyBytes();
+                    SecretKeySpec aesKey = generateRandomAESKey(aesKeyBytes);
+                    byte[] ivBytes = generateIvBytes();
+                    String iv = generateIv(ivBytes);
+
+                    // Create AES cipher and encrypt diary content
+                    Cipher aesCipher = createAESCipher(aesKey, ivBytes);
+                    String encryptDiary = encryptDiary(aesCipher, diaryEntity.getContent());
+
+                    // Encrypt AES key with user's public key
+                    String encryptAESKey = encryptAESKey(aesKeyBytes, publicKey);
+
+                    // Update existing diary with new encrypted content, AES key, and IV
+                    existingDiary.setContent(encryptDiary);
+                    existingDiary.setAesKey(encryptAESKey);
+                    existingDiary.setAesIv(iv);
+                } catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException |
+                         BadPaddingException | InvalidKeyException | InvalidKeySpecException |
+                         InvalidAlgorithmParameterException | UnsupportedEncodingException e) {
+                    throw new RuntimeException("Failed to encrypt diary content: " + e.getMessage(), e);
+                }
+            }
             return diaryRepository.save(existingDiary);
         }).orElseThrow(() -> new RuntimeException("Diary does not exist"));
     }

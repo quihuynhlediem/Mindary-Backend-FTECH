@@ -116,22 +116,36 @@ public class DiaryController {
     public ResponseEntity<AnalysisResultDto> createDiary(
             @PathVariable("userId") UUID userId,
             @RequestParam("diary") String diary,
+            @RequestParam("ai") String ai,
             @RequestParam(value = "images", required = false) List<MultipartFile> photos,
             @RequestParam(value = "timezone") String timezone
     ) throws Exception {
-        log.info("Creating diary");
+        log.info("Creating a new diary");
         Optional<DiaryEntity> existingDiary = diaryService.findByUserIdAndDate(userId, timezone);
 
+        // Check if it is existed or not
         if (existingDiary.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new AnalysisResultDto());
         }
+
+        // Saved user's diary
         DiaryEntity savedDiary = diaryService.create(userId, diary);
         Set<DiaryImage> savedImages = diaryImageService.uploadAndSaveImages(photos, savedDiary);
         savedDiary.setImages(savedImages);
-        rabbitMQSender.sendDiary(savedDiary);
 
-        AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
+        // Analyze it if user allows
+        if (ai.equals("yes")) {
+//            rabbitMQSender.sendDiary(savedDiary);
+            AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
+            return ResponseEntity.status(HttpStatus.CREATED).body(analysisResultDto);
+        }
+
+        // If user not allow analyzed just store
+        AnalysisResultDto analysisResultDto =  AnalysisResultDto.builder()
+                .diaryId(savedDiary.getId())
+                .userId(userId)
+                .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(analysisResultDto);
     }
