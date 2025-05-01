@@ -30,14 +30,8 @@ const fetchTrackData = async (req, res) => {
 }
 const createMeditation = async (req, res) => {
     try {
-        const { title, content } = req.body;
-
-        if (!title || !content) {
-            return res.status(400).json({ message: 'Title and content are required.' });
-        }
-
-        const meditation = await MeditationService.createMeditation(title, content);
-        return res.status(201).json(meditation);
+        const response = await MeditationService.createMeditation(req.body);
+        return res.status(201).json(response);
     } catch (error) {
         if (error.name === 'ValidationError') {
             return res.status(400).json({ message: error.message });

@@ -12,7 +12,7 @@ const prompt = ChatPromptTemplate.fromMessages([
   ]);
 
 const llm = new ChatGoogleGenerativeAI({
-	modelName: "gemini-1.5-flash",
+	modelName: "gemini-2.0-flash",
 	temperature: 0, // 0.6 in MTan sample
 	apiKey: config.GEMINI_API_KEY,
 	safetySettings: [
@@ -24,9 +24,9 @@ const llm = new ChatGoogleGenerativeAI({
 });
 
 const embeddings = new GoogleGenerativeAIEmbeddings({	
-    modelName: "text-embedding-004",
+    modelName: "gemini-embedding-exp-03-07",
     apiKey: config.GEMINI_API_KEY,
     taskType: TaskType.RETRIEVAL_DOCUMENT,  // TaskType.SEMANTIC_SIMILARITY??
 });
 
-export default { llm, embeddings, prompt };
+export { llm, embeddings, prompt };

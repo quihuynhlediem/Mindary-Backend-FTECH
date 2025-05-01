@@ -1,23 +1,25 @@
-import Meditation from '../database/models/MeditationModel.js';
-import llmModelConfig from '../config/llmModelConfig.js';
+import Meditation from '../database/models/Meditation.js';
+import { prompt, llm } from '../config/llmModelConfig.js';
 import { vectorStore } from '../database/connection.js';
 import { Document } from "@langchain/core/documents";
-import { v4 as uuidv4 } from "uuid";
 import { buildSearchPrompt } from '../utils/prompt.js';
 import Embedding from '../database/models/EmbeddingModel.js';
-import mongoose, { ObjectId } from 'mongoose';
-import instance from '../utils/axiosInstance.js';
+import mongoose from 'mongoose';
+import { instance, urlInstance } from '../utils/axiosInstance.js';
 
-
-const fetchAllTrackIds = async () => {
+/**
+* Method to fetch all track IDs from the API.
+* @returns List of track IDs.
+*/
+const fetchAllTrackIds = async (body) => {
     try {
         const response = await instance.get('/single-tracks/filter', {
             params: {
                 content_langs: 'en',
-                content_types: 'talks',
+                content_types: 'guided,talks',
                 device_lang: 'en',
-                offset: 0,
-                size: 2, // number of items to fetch
+                offset: body.offset || 0, // default offset
+                size: body.size || 3, // default size
                 sort_option: 'most_played',
             }
         });
@@ -30,68 +32,87 @@ const fetchAllTrackIds = async () => {
     }
 }
 
+// Fetch track data using the track ID
 const fetchTrackDataWithId = async (id) => {
     try {
         const response = await instance.get(`/single-tracks/${id}`);
+        const url = await urlInstance.get('/generate', {
+            params: {
+                type: 'SINGLE_TRACK',
+                id_slug: response.data.slug,
+            }
+        });
         const trackData = {
             id: response.data.id,
             slug: response.data.slug,
+            tags: response.data.tags,
             title: response.data.title,
             author: response.data.publisher.name,
             description: response.data.long_description,
             transcripts: response.data.transcripts.transcript,
+            reviews_summary: response.data.ai_user_reviews_summary.message,
+            picture_url: `https://libraryitems.insighttimer.com/${response.data.id}/pictures/tiny_rectangle_xlarge.jpeg`,
+            widget_url: url.data.iframe.src,
+
         }
         return trackData;
     } catch (error) {
         console.error('Error fetching data:', error);
         throw new Error('Failed to fetch data from the API');
     }
-} 
+}
 
-const fetchTrackData = async () => {
+// Fetch all track data using the track IDs
+const fetchTrackData = async (body) => {
     try {
-        const trackIds = await fetchAllTrackIds();
-        console.log(trackIds)
+        const trackIds = await fetchAllTrackIds(body);
         const tracks = await Promise.all(trackIds.map(id => fetchTrackDataWithId(id)));
         return tracks;
     } catch (error) {
         console.error('Error fetching track data:', error);
-        throw new Error('Failed to fetch track data from the API');  
+        throw new Error('Failed to fetch track data from the API');
     }
 }
 
-
-// const createMeditation = async (title, content) => {
-//     try {
-//         // Create a new meditation
-//         const meditation = await Meditation.create({ title, content });
-//         const messages = await llmModelConfig.prompt.invoke({
-//             question: 'Given the following meditation content in the context section. Describe when someone should use this meditation based on their emotional state.',
-//             context: content,
-//         });
-//         // console.log("LLM prompt:", messages);
-
-//         const useCase = await llmModelConfig.llm.invoke(messages);
-//         // console.log("LLM answer:", useCase.content);
-
-//         // Add the embedding data (Meditation's usecase) to the vectorStore
-//         //const embeddingId = uuidv4();
-//         await vectorStore.addDocuments(
-//             [{
-//                 pageContent: useCase.content,
-//                 // metadata: { _meditationId: meditation._id }
-//             }],
-//             {
-//                 // ids: [embeddingId]
-//                 ids: [meditation._id]
-//             }
-//         );
-//         return { meditation };
-//     } catch (error) {
-//         console.error("Error creating meditation:", error);
-//         return { success: false, message: "An error occurred while creating the meditation. Please try again later." };
-//     }
-// };
+const storeMeditation = (meditations) => {
+    try {
+        const result = meditations.map(meditation => {
+            return new Document({
+                pageContent: meditation.review_summary,
+                metadata: {
+                    // id: meditation.id,
+                    slug: meditation.slug,
+                    tags: meditation.tags,
+                    title: meditation.title,
+                    author: meditation.author,
+                    description: meditation.description,
+                    transcripts: meditation.transcripts,
+                    picture_url: meditation.picture_url,
+                    widget_url: meditation.widget_url,
+                },
+                // id: meditation.id,
+            });
+        })
+        return result;
+    } catch (error) {
+        console.error('Error storing meditation:', error);
+        throw new Error('Failed to store meditation in the database');
+    }
+};
+const createMeditation = async (body) => {
+    try {
+        // Create a new meditation
+        const meditations = await fetchTrackData(body);
+        const resource = await vectorStore.addDocuments(storeMeditation(meditations), {
+            ids: meditations.map(m => m.id)
+        });
+        console.log('Resource:', resource);
+        return resource;
+    } catch (error) {
+        console.error("Error creating meditation:", error);
+        return { success: false, message: "An error occurred while creating the meditation. Please try again later." };
+    }
+};
 
 // const createMultipleMeditations = async (meditationsData) => {
 //     //return await Meditation.insertMany(meditationsData);
@@ -151,6 +172,8 @@ const fetchTrackData = async () => {
 //     }
 // };
 
+
+
 const createMultipleMeditations = async (meditationsData) => {
     try {
         // First create all meditation documents in MongoDB
@@ -158,12 +181,12 @@ const createMultipleMeditations = async (meditationsData) => {
 
         // Process all meditations in parallel to get use cases
         const processingResults = await Promise.all(createdMeditations.map(async (meditation) => {
-            const messages = await llmModelConfig.prompt.invoke({
+            const messages = await prompt.invoke({
                 question: 'Given the following meditation content in the context section. Describe when someone should use this meditation based on their emotional state.',
                 context: meditation.content,
             });
 
-            const useCase = await llmModelConfig.llm.invoke(messages);
+            const useCase = await llm.invoke(messages);
 
             return {
                 document: {
@@ -215,21 +238,9 @@ const getAllMeditations = async () => {
 
 const getMeditationById = async (meditationId) => {
     try {
-        const embedding = await Embedding.findById(meditationId);
-        console.log('Embedding:', embedding);
-        // const meditation = await Meditation.findById(meditationId);
-        // if (!meditation) {
-        //     return {
-        //         success: false,
-        //         message: "Meditation not found.",
-        //         data: null
-        //     };
-        // }
-        // return {
-        //     success: true,
-        //     message: "Meditation retrieved successfully.",
-        //     data: meditation
-        // };
+        
+        const meditation = await Meditation.findById(meditationId);
+        return meditation;
     } catch (error) {
         console.error("Error retrieving meditation by ID:", error);
         return {
@@ -257,12 +268,12 @@ const getRecommendedMeditation = async (diaryAnalysis) => {
         }
         console.log("Meditations content:", meditationsContent);
 
-        const messages = await llmModelConfig.prompt.invoke({
+        const messages = await prompt.invoke({
             question: prompt,
             context: meditationsContent,
         });
 
-        const answer = await llmModelConfig.llm.invoke(messages);
+        const answer = await llm.invoke(messages);
         console.log("LLM answer:", answer.content);
 
         return answer.toJSON().kwargs.content;
@@ -287,27 +298,10 @@ const updateMeditation = async (meditationId, newTitle, newContent) => {
     }
 };
 
-// const deleteMeditation = async (meditationId) => {
-//     return await vectorStore.delete({ ids: [meditationId] });
-// };
-
 const deleteMeditation = async (meditationId) => {
-    try {
-        const convertedEmbeddingId = new mongoose.Types.ObjectId(meditationId);
-        console.log('Converted ID:', convertedEmbeddingId);
-        //await Meditation.findByIdAndDelete(meditationId);
-
-        // await vectorStore.delete({ ids: [meditationId] });
-
-        //const deleteEmbedding = await vectorStore.delete({ ids: [convertedEmbeddingId] });
-        await Embedding.deleteOne({ _meditationId: convertedEmbeddingId });
-
-        // return { success: true, message: "Meditation and associated embedding deleted successfully!" };
-    } catch (error) {
-        console.error('Error deleting meditation:', error);
-        throw new Error('Failed to delete meditation: ' + error.message);
-    }
+    return await vectorStore.delete({ ids: [meditationId] });
 };
+
 
 export default {
     fetchAllTrackIds,

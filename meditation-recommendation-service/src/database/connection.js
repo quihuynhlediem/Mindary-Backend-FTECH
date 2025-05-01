@@ -41,7 +41,7 @@
 import mongoose from 'mongoose';
 import config from '../config/config.js';
 import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
-import llmModelConfig from '../config/llmModelConfig.js';
+import {embeddings} from '../config/llmModelConfig.js';
 
 let vectorStore;
 
@@ -55,13 +55,13 @@ const connectDB = async () => {
         await mongoose.connect(config.MONGODB_URI, { dbName: "test" });
         console.log("Successfully connected to MongoDB.");
 
-        const collection = mongoose.connection.db.collection("embeddingMeditations");
+        // const collection = mongoose.connection.db.collection("meditations");
 
         if (!vectorStore) {
-            vectorStore = new MongoDBAtlasVectorSearch(llmModelConfig.embeddings, {
-                collection: collection,
+            vectorStore = new MongoDBAtlasVectorSearch(embeddings, {
+                collection: mongoose.connection.db.collection("meditations"),
                 indexName: "default",
-                textKey: "content",
+                textKey: "review_summary",
                 embeddingKey: "embedding",
             });
             console.log("Successfully connected to MongoDB Atlas Vector Store.");
