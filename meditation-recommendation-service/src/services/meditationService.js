@@ -3,9 +3,8 @@ import { prompt, llm } from '../config/llmModelConfig.js';
 import { vectorStore } from '../database/connection.js';
 import { Document } from "@langchain/core/documents";
 import { buildSearchPrompt } from '../utils/prompt.js';
-import Embedding from '../database/models/EmbeddingModel.js';
-import mongoose from 'mongoose';
 import { instance, urlInstance } from '../utils/axiosInstance.js';
+import { ObjectId } from 'mongodb';
 
 /**
 * Method to fetch all track IDs from the API.
@@ -43,14 +42,14 @@ const fetchTrackDataWithId = async (id) => {
             }
         });
         const trackData = {
-            id: response.data.id,
+            meditation_id: response.data.id,
             slug: response.data.slug,
             tags: response.data.tags,
             title: response.data.title,
             author: response.data.publisher.name,
             description: response.data.long_description,
             transcripts: response.data.transcripts.transcript,
-            reviews_summary: response.data.ai_user_reviews_summary.message,
+            reviews_summary: response.data.ai_user_reviews_summary.message.replace(/\*\*(.*?)\*\*/g, '$1'),
             picture_url: `https://libraryitems.insighttimer.com/${response.data.id}/pictures/tiny_rectangle_xlarge.jpeg`,
             widget_url: url.data.iframe.src,
 
@@ -78,9 +77,9 @@ const storeMeditation = (meditations) => {
     try {
         const result = meditations.map(meditation => {
             return new Document({
-                pageContent: meditation.review_summary,
+                pageContent: meditation.reviews_summary,
                 metadata: {
-                    // id: meditation.id,
+                    meditation_id: meditation.meditation_id,
                     slug: meditation.slug,
                     tags: meditation.tags,
                     title: meditation.title,
@@ -90,7 +89,6 @@ const storeMeditation = (meditations) => {
                     picture_url: meditation.picture_url,
                     widget_url: meditation.widget_url,
                 },
-                // id: meditation.id,
             });
         })
         return result;
@@ -103,9 +101,11 @@ const createMeditation = async (body) => {
     try {
         // Create a new meditation
         const meditations = await fetchTrackData(body);
-        const resource = await vectorStore.addDocuments(storeMeditation(meditations), {
-            ids: meditations.map(m => m.id)
-        });
+        const resource = await vectorStore.addDocuments(storeMeditation(meditations),
+            {
+                ids: meditations.map(m => m.meditation_id)
+            }
+        );
         console.log('Resource:', resource);
         return resource;
     } catch (error) {
@@ -114,109 +114,6 @@ const createMeditation = async (body) => {
     }
 };
 
-// const createMultipleMeditations = async (meditationsData) => {
-//     //return await Meditation.insertMany(meditationsData);
-//     const meditationsWithIds = meditationsData.map(
-//         meditation => ({
-//         ...meditation,
-//         meditationId: uuidv4() 
-//     }));
-
-//     const documents = meditationsData.map(
-//         (meditation, index) => ({
-//         pageContent: meditation.content, 
-//         metadata: { 
-//             title: meditation.title,
-//         }
-//     }));
-
-//     await vectorStore.addDocuments(
-//         documents,
-//         { 
-//             ids: meditationsWithIds.map(m => m.meditationId) 
-//         }
-//     );
-// };
-
-// const createMultipleMeditations = async (meditationsData) => {
-//     try {
-//         // Generate a unique ID for each meditation
-//         const meditationsWithIds = meditationsData.map(meditation => ({
-//             ...meditation,
-//             meditationId: uuidv4()
-//         }));
-//
-//         // Prepare documents for vectorStore insertion
-//         const documents = meditationsData.map(meditation => ({
-//             pageContent: meditation.content,
-//             metadata: { title: meditation.title }
-//         }));
-//
-//         // Add the documents to vectorStore using the generated IDs
-//         await vectorStore.addDocuments(
-//             documents,
-//             { ids: meditationsWithIds.map(m => m.meditationId) }
-//         );
-//
-//         return {
-//             success: true,
-//             message: "Multiple meditations have been created successfully.",
-//             ids: meditationsWithIds.map(m => m.meditationId)
-//         };
-//     } catch (error) {
-//         console.error("Error creating multiple meditations:", error);
-//         return {
-//             success: false,
-//             message: "An error occurred while creating multiple meditations. Please try again later."
-//         };
-//     }
-// };
-
-
-
-const createMultipleMeditations = async (meditationsData) => {
-    try {
-        // First create all meditation documents in MongoDB
-        const createdMeditations = await Meditation.create(meditationsData);
-
-        // Process all meditations in parallel to get use cases
-        const processingResults = await Promise.all(createdMeditations.map(async (meditation) => {
-            const messages = await prompt.invoke({
-                question: 'Given the following meditation content in the context section. Describe when someone should use this meditation based on their emotional state.',
-                context: meditation.content,
-            });
-
-            const useCase = await llm.invoke(messages);
-
-            return {
-                document: {
-                    pageContent: useCase.content,
-                    metadata: { _meditationId: meditation._id }
-                },
-                ids: [meditation._id]
-            };
-        }));
-
-        // Extract documents and IDs for vectorStore
-        const documents = processingResults.map(result => result.document);
-        const ids = processingResults.map(result => result.ids);
-
-        // Add all documents to vectorStore using meditation IDs
-        await vectorStore.addDocuments(documents, { ids });
-
-        return {
-            success: true,
-            message: "Multiple meditations have been created successfully.",
-            meditations: createdMeditations
-        };
-    } catch (error) {
-        console.error("Error creating multiple meditations:", error);
-        return {
-            success: false,
-            message: "An error occurred while creating multiple meditations. Please try again later."
-        };
-    }
-}
 
 const getAllMeditations = async () => {
     try {
@@ -238,7 +135,7 @@ const getAllMeditations = async () => {
 
 const getMeditationById = async (meditationId) => {
     try {
-        
+
         const meditation = await Meditation.findById(meditationId);
         return meditation;
     } catch (error) {
@@ -251,32 +148,36 @@ const getMeditationById = async (meditationId) => {
     }
 };
 
-const getRecommendedMeditation = async (diaryAnalysis) => {
+const getRecommendedMeditation = async (analysis) => {
     try {
-        const prompt = buildSearchPrompt({ diaryAnalysis });
+        //const prompt = buildSearchPrompt({ diaryAnalysis });
+        const analysisObject = analysis;
+        //console.log("Analysis object:", analysisObject);
+        const retrievedMeditations = await vectorStore.similaritySearch("How to have a good sleep ?", 5);
+        // if (!retrievedMeditations || retrievedMeditations.length === 0) {
+        //     throw new Error("No meditations found matching the criteria.");
+        // }
+        // console.log("Retrieved meditations:", retrievedMeditations);
 
-        const retrievedMeditations = await vectorStore.similaritySearch(prompt, 10);
-        if (!retrievedMeditations || retrievedMeditations.length === 0) {
-            throw new Error("No meditations found matching the criteria.");
-        }
-        console.log("Retrieved meditations:", retrievedMeditations);
+        // const meditationsContent = retrievedMeditations
+        //     .map(doc => doc.pageContent);
+        // if (!meditationsContent) {
+        //     throw new Error("Retrieved meditations contain no content.");
+        // }
+        // console.log("Meditations content:", meditationsContent);
 
-        const meditationsContent = retrievedMeditations
-            .map(doc => doc.pageContent);
-        if (!meditationsContent) {
-            throw new Error("Retrieved meditations contain no content.");
-        }
-        console.log("Meditations content:", meditationsContent);
+        // const messages = await prompt.invoke({
+        //     question: prompt,
+        //     context: meditationsContent,
+        // });
 
-        const messages = await prompt.invoke({
-            question: prompt,
-            context: meditationsContent,
-        });
+        // const answer = await llm.invoke(messages);
+        // console.log("LLM answer:", answer.content);
 
-        const answer = await llm.invoke(messages);
-        console.log("LLM answer:", answer.content);
-
-        return answer.toJSON().kwargs.content;
+        // return answer.toJSON().kwargs.content;
+        console.log("Recommended meditation:", retrievedMeditations);
+        return retrievedMeditations;
+        
     } catch (error) {
         console.error("Error retrieving meditation:", error);
         return { success: false, message: `Failed to retrieve meditation.` };
@@ -298,17 +199,16 @@ const updateMeditation = async (meditationId, newTitle, newContent) => {
     }
 };
 
-const deleteMeditation = async (meditationId) => {
-    return await vectorStore.delete({ ids: [meditationId] });
+const deleteMeditation = async (id) => {
+    return await vectorStore.delete({ ids: [id] });
 };
 
 
 export default {
-    fetchAllTrackIds,
-    fetchTrackDataWithId,
-    fetchTrackData,
+    // fetchAllTrackIds,
+    // fetchTrackDataWithId,
+    // fetchTrackData,
     createMeditation,
-    createMultipleMeditations,
     getAllMeditations,
     getMeditationById,
     updateMeditation,

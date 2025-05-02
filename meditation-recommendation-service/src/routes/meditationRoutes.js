@@ -44,16 +44,14 @@ const router = express.Router();
  *         description: Internal server error.
  */
 router.post('/create', MeditationController.createMeditation);
-router.post('/create/multiple', MeditationController.createMultipleMeditations);
 
-router.get('/fetch', MeditationController.fetchTrackData);
-router.get('/fetch/:id', MeditationController.fetchTrackDataWithId);
+
 router.get('/get/all', MeditationController.getAllMeditations);
 router.get('/get/:id', MeditationController.getMeditationById);
+
 router.post('/get/recommended', MeditationController.getRecommendedMeditation);
 
 router.delete('/delete/:id', MeditationController.deleteMeditation);
-// router.get('/delete/:id', MeditationController.deleteMeditation);
 router.put('/update/:id', MeditationController.updateMeditation);
 
 export default router;

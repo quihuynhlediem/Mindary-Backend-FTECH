@@ -61,7 +61,7 @@ const connectDB = async () => {
             vectorStore = new MongoDBAtlasVectorSearch(embeddings, {
                 collection: mongoose.connection.db.collection("meditations"),
                 indexName: "default",
-                textKey: "review_summary",
+                textKey: "reviews_summary",
                 embeddingKey: "embedding",
             });
             console.log("Successfully connected to MongoDB Atlas Vector Store.");
