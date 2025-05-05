@@ -46,7 +46,7 @@ const router = express.Router();
 router.post('/create', MeditationController.createMeditation);
 
 
-router.get('/get/all', MeditationController.getAllMeditations);
+router.get('/', MeditationController.getAllMeditations);
 router.get('/get/:id', MeditationController.getMeditationById);
 
 router.post('/get/recommended', MeditationController.getRecommendedMeditation);
