@@ -21,7 +21,7 @@ import java.util.UUID;
 @Service
 public interface DiaryService {
 
-    DiaryEntity create(UUID userId, String diary) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidAlgorithmParameterException, UnsupportedEncodingException;
+    DiaryEntity create(UUID userId, String diary, LocalDate targetDate) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidAlgorithmParameterException, UnsupportedEncodingException;
 
     AnalysisResultDto analyze (DiaryEntity savedDiary);
 

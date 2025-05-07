@@ -2,6 +2,7 @@ package com.mindary.diary.controllers;
 
 import com.mindary.diary.dto.AnalysisResultDto;
 import com.mindary.diary.dto.DiaryDto;
+import com.mindary.diary.dto.DiaryImageDto;
 import com.mindary.diary.mappers.Mapper;
 import com.mindary.diary.models.DecryptAESKeyRequest;
 import com.mindary.diary.models.DiaryEntity;
@@ -28,10 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Tag(name = "Diary APIs", description = "These APIs are used to handle diary entries.")
 @RestController
@@ -41,6 +39,7 @@ import java.util.UUID;
 public class DiaryController {
     private final DiaryService diaryService;
     private final Mapper<DiaryEntity, DiaryDto> diaryMapper;
+    private final Mapper<DiaryImage, DiaryImageDto> diaryImageMapper;
     private final DiaryImageService diaryImageService;
     private final RabbitMQSender rabbitMQSender;
 
@@ -94,13 +93,37 @@ public class DiaryController {
             @PathVariable("userId") UUID userId,
             @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
     ) {
-
         Optional<DiaryEntity> foundDiary = diaryService.findByUserIdAndDate(userId, currentDate);
 
         if (foundDiary.isPresent()) {
+            log.info("Diary found: {}", foundDiary.get().toString());
             DiaryDto diaryDto = diaryMapper.mapTo(foundDiary.get());
             return new ResponseEntity<>(diaryDto, HttpStatus.OK);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @GetMapping(path = "/{diaryId}/user/{userId}/images")
+    public ResponseEntity<ArrayList<DiaryImageDto>> getDiaryImageByDiaryId(
+            @PathVariable("userId") UUID userId,
+            @PathVariable("diaryId") UUID diaryId
+    ) {
+        ArrayList<DiaryImage> foundDiary = diaryImageService.findImageByDiaryId(diaryId);
+        ArrayList<DiaryImageDto> diaryImageDtos = new ArrayList<>();
+        if (foundDiary != null) {
+            for (DiaryImage diaryImage : foundDiary) {
+                diaryImageDtos.add(diaryImageMapper.mapTo(diaryImage));
+            }
+
+            for (DiaryImageDto  diaryImageDto: diaryImageDtos) {
+                log.info("Diary image found: {}", diaryImageService.generatePresignedUrl(diaryImageDto.getUrl()));
+                diaryImageDto.setUrl(diaryImageService.generatePresignedUrl(diaryImageDto.getUrl()));
+            }
+
+            return new ResponseEntity<>(diaryImageDtos, HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -122,7 +145,7 @@ public class DiaryController {
     ) throws Exception {
         log.info("Creating a new diary");
         Optional<DiaryEntity> existingDiary = diaryService.findByUserIdAndDate(userId, timezone);
-
+        LocalDate currentDate = LocalDate.now();
         // Check if it is existed or not
         if (existingDiary.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -130,7 +153,7 @@ public class DiaryController {
         }
 
         // Saved user's diary
-        DiaryEntity savedDiary = diaryService.create(userId, diary);
+        DiaryEntity savedDiary = diaryService.create(userId, diary, currentDate);
         Set<DiaryImage> savedImages = diaryImageService.uploadAndSaveImages(photos, savedDiary);
         savedDiary.setImages(savedImages);
 
@@ -171,9 +194,9 @@ public class DiaryController {
         ZoneId zone = ZoneId.of(timezone);
         LocalDate currentDate = LocalDate.now(zone);
 
-        if (targetDate.isAfter(currentDate)) {
+        if (!targetDate.equals(currentDate)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(DiaryDto.builder().content("Target date is in the future.").build());
+                    .body(DiaryDto.builder().content("Target date is not available.").build());
         }
 
         Optional<DiaryEntity> existingDiary = diaryService.findByUserIdAndDate(userId, targetDate);
@@ -182,7 +205,7 @@ public class DiaryController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        DiaryEntity savedDiary = diaryService.create(userId, diary);
+        DiaryEntity savedDiary = diaryService.create(userId, diary, targetDate);
         Set<DiaryImage> savedDiaryImages = diaryImageService.uploadAndSaveImages(images, savedDiary);
         savedDiary.setImages(savedDiaryImages);
 

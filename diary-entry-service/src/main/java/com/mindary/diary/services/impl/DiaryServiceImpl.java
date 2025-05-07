@@ -54,7 +54,7 @@ public class DiaryServiceImpl implements DiaryService {
     private String analysisQueue;
 
     @Override
-    public DiaryEntity create(UUID userId, String diary) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
+    public DiaryEntity create(UUID userId, String diary, LocalDate targetDate) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidAlgorithmParameterException, UnsupportedEncodingException {
         // Retrieve user's public key
         String publicKeyBase64 = getUserPublicKey(userId);
         PublicKey publicKey = decodePublicKey(publicKeyBase64);
