@@ -5,6 +5,7 @@ import com.mindary.identity.dto.response.AuthResponse;
 import com.mindary.identity.dto.request.LoginRequest;
 import com.mindary.identity.dto.request.SignUpRequest;
 import com.mindary.identity.dto.response.VerifyTokenResponse;
+import com.mindary.identity.models.User;
 import com.mindary.identity.security.SystemUserDetails;
 import com.mindary.identity.services.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +48,7 @@ public class AuthController {
         );
 
         UUID userId = extractUserId(userDetails);
+        String salt = extractSalt(userDetails);
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
@@ -55,6 +57,7 @@ public class AuthController {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(userId)
+                .salt(salt)
                 .build();
 
         return ResponseEntity.ok(authResponse);
@@ -72,10 +75,15 @@ public class AuthController {
                 signUpRequest.getUsername(),
                 signUpRequest.getPassword(),
                 signUpRequest.getEmail(),
-                signUpRequest.getRole()
+                signUpRequest.getPublicKey(),
+                signUpRequest.getSalt(),
+                signUpRequest.getEncryptedPrivateKey(),
+                signUpRequest.getPrivateKeyIv(),
+                User.UserRole.CUSTOMER
         );
 
         UUID userId = extractUserId(userDetails);
+        String salt = extractSalt(userDetails);
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
@@ -84,6 +92,7 @@ public class AuthController {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(userId)
+                .salt(salt)
                 .build();
 
         return ResponseEntity.ok(authResponse);
@@ -130,5 +139,9 @@ public class AuthController {
 
     private UUID extractUserId(UserDetails userDetails) {
         return ((SystemUserDetails) userDetails).getId();
+    }
+
+    private String extractSalt(UserDetails userDetails) {
+        return ((SystemUserDetails) userDetails).getSalt();
     }
 }

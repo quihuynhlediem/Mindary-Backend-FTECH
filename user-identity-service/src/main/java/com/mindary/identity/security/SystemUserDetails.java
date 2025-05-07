@@ -1,5 +1,6 @@
 package com.mindary.identity.security;
 
+import com.mindary.identity.models.CustomerEntity;
 import com.mindary.identity.models.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SystemUserDetails implements UserDetails {
 
-    private final User user;
+    private final CustomerEntity user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -56,4 +57,6 @@ public class SystemUserDetails implements UserDetails {
     public UUID getId() {
         return user.getId();
     }
+
+    public String getSalt() {return user.getRandomSalt();}
 }

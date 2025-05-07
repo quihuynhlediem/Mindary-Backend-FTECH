@@ -1,7 +1,6 @@
 package com.mindary.identity.controllers;
 
 import com.mindary.identity.dto.CustomerDto;
-import com.mindary.identity.dto.response.AuthResponse;
 import com.mindary.identity.mappers.impl.CustomerMapper;
 import com.mindary.identity.models.CustomerEntity;
 import com.mindary.identity.services.AuthenticationService;
@@ -16,18 +15,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
