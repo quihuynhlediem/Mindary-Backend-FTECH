@@ -4,49 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/Mindary-Backend-FTECH.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-analysis-service/pnpm-lock.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/AnalysisResultDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/mappers/impl/DiaryImageMapperImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/CustomerEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DecryptAESKeyRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/repositories/CustomerRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/CustomerService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/CustomerServiceImpl.java" afterDir="false" />
+    <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="Merge jacky branch to qui branch">
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/CorrelationDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/EmotionDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/SymptomDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQReceiver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQSender.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQReceiverImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQSenderImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/MapperConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/MapperConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/S3Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/S3Config.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/controllers/DiaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/controllers/DiaryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/DiaryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/DiaryDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/mappers/impl/DiaryMapperImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/mappers/impl/DiaryMapperImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DiaryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DiaryEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/repositories/DiaryImageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/repositories/DiaryImageRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/repositories/DiaryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/repositories/DiaryRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/DiaryImageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/DiaryImageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ai-chat-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ai-chat-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/AnalysisResultDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/AnalysisResultDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/DiaryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/DiaryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryImageServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryImageServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/S3ServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/S3ServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/CustomerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/CustomerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/CustomerDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/request/SignUpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/request/SignUpRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/response/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/response/AuthResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/models/CustomerEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/models/CustomerEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/security/SystemUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/security/SystemUserDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/AuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/AuthenticationServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -62,12 +44,12 @@
     &quot;assignee&quot;: &quot;BaoHo205&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/quihuynhlediem/Mindary-Backend-FTECH",
-    "accountId": "dd17aa49-7de7-47e8-9c81-09892972dfc6"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/quihuynhlediem/Mindary-Backend-FTECH&quot;,
+    &quot;accountId&quot;: &quot;dd17aa49-7de7-47e8-9c81-09892972dfc6&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -82,9 +64,16 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.AIChatApplication.executor": "Run",
     "Spring Boot.ApiGatewayApplication.executor": "Run",
-    "git-widget-placeholder": "Merging qui/diary-analysis",
+    "Spring Boot.DiaryServiceApplication.executor": "Run",
+    "Spring Boot.IdentityApplication.executor": "Run",
+    "git-widget-placeholder": "qui/diary-analysis",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/ADMIN/Documents/project/mindary_v2/Mindary-Backend-FTECH/user-identity-service",
@@ -93,6 +82,9 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
     "run.configurations.included.in.services": "true",
     "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
@@ -105,7 +97,18 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.IdentityApplication">
+  <component name="RunManager" selected="Spring Boot.DiaryServiceApplication">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="diary-entry" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="diary-entry" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration name="AIChatApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="ai-chat" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.mindary.aichat.AIChatApplication" />
@@ -167,10 +170,23 @@
       <workItem from="1746423598840" duration="384000" />
       <workItem from="1746631051900" duration="794000" />
     </task>
+    <task id="LOCAL-00001" summary="Merge jacky branch to qui branch">
+      <option name="closed" value="true" />
+      <created>1746633197497</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1746633197497</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Merge jacky branch to qui branch" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge jacky branch to qui branch" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

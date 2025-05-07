@@ -1,5 +1,6 @@
 package com.mindary.diary.services;
 
+import com.mindary.diary.dto.AnalysisResultDto;
 import com.mindary.diary.models.DiaryEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,8 @@ import java.util.UUID;
 public interface DiaryService {
 
     DiaryEntity create(UUID userId, String diary, LocalDate targetDate) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidKeySpecException, InvalidAlgorithmParameterException, UnsupportedEncodingException;
+
+    AnalysisResultDto analyze (DiaryEntity savedDiary);
 
     DiaryEntity save(DiaryEntity diary);
 
