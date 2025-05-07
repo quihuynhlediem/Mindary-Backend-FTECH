@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -26,9 +27,13 @@ public class DiaryDto {
 
     private String content;
 
+    private String aesKey;
+
+    private String aesIv;
+
     private UUID userId;
 
-    private Set<DiaryImageDto> images;
+//    private Set<DiaryImageDto> images;
 
     private LocalDateTime createdAt;
 

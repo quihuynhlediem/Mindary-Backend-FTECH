@@ -46,7 +46,7 @@ public class S3ServiceImpl implements S3Service {
 
         s3Client.putObject(putObjectRequest, requestBody);
 
-        return generateS3Url(fileName);
+        return fileName;
     }
 
     private String createFileName(MultipartFile file) {

@@ -1,4 +1,4 @@
-package com.mindary.identity.models;
+package com.mindary.diary.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,10 +45,4 @@ public class CustomerEntity extends User {
 
     @Column(name = "public_key", columnDefinition = "TEXT")
     private String publicKey;
-
-    @Column(name = "encrypted_private_key", columnDefinition = "TEXT")
-    private String encryptedPrivateKey;
-
-    @Column(name = "private_key_iv", columnDefinition = "TEXT")
-    private String privateKeyIv;
 }
