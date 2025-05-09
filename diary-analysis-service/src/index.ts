@@ -45,4 +45,4 @@ mongoose
         })
         .catch((error) => console.log(`${error}. SERVER IS NOT CONNECTING`));
 
-app.use('/api', router());
+app.use('/api/v1', router());
