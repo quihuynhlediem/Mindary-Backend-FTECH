@@ -5,17 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="Merge jacky branch to qui branch">
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/CorrelationDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/EmotionDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/SymptomDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQReceiver.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQSender.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQReceiverImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQSenderImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai-chat-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ai-chat-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/AnalysisResultDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/AnalysisResultDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/DiaryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/DiaryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/controllers/diaryAnalysisController.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/models/DiaryAnalysisResult.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/analysis.ts" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/src/router/analysis.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/diaryAnalysis.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/src/router/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/services/diaryAnalysisService.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-analysis-service/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +97,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.DiaryServiceApplication">
+  <component name="RunManager" selected="Spring Boot.ApiGatewayApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="diary-entry" />
       <method v="2">

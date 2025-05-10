@@ -1,39 +1,39 @@
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 import { authentication, random } from '../helper';
 import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from "../models/User";
 
 const generateToken = (id: string) => {
   return jwt.sign(
-    { id }, 
-    process.env.JWT_SECRET, 
+    { id },
+    process.env.JWT_SECRET,
     {
       expiresIn: '30d',
-  });
+    });
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    if(!email || !password) {
+    if (!email || !password) {
       res.sendStatus(400);
       return;
     }
 
     const user = await getUserByEmail(email);
 
-    if(!user) {
+    if (!user) {
       res.sendStatus(400);
       return;
     }
 
-    if(!await user.matchPassword(password)){
+    if (!await user.matchPassword(password)) {
       res.sendStatus(403);
       return;
     }
 
-    res.status(200).json({user, token: generateToken(user._id.toString())}).end();
+    res.status(200).json({ user, token: generateToken(user._id.toString()) }).end();
     return;
   } catch (error) {
     console.log(error);
@@ -67,7 +67,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json({user, token: generateToken(user._id.toString())});
+    res.status(200).json({ user, token: generateToken(user._id.toString()) });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Server error' });

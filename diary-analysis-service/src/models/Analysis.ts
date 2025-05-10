@@ -20,7 +20,7 @@ export interface IDiaryAnalysisResult extends Document {
     }[];
 }
 
-const diarySchema: Schema<IDiaryAnalysisResult> = new Schema(
+const diaryAnalysisSchema: Schema<IDiaryAnalysisResult> = new Schema(
     {
         userId: { type: String },
         diaryId: { type: String },
@@ -49,7 +49,7 @@ const diarySchema: Schema<IDiaryAnalysisResult> = new Schema(
     { timestamps: true }
 );
 
-const DiaryAnalysisResult: Model<IDiaryAnalysisResult> =
-    mongoose.models.diaries || mongoose.model<IDiaryAnalysisResult>("diaries", diarySchema);
+const Analysis: Model<IDiaryAnalysisResult> =
+    mongoose.models.analyses || mongoose.model<IDiaryAnalysisResult>("analyses", diaryAnalysisSchema);
 
-export default DiaryAnalysisResult;
+export default Analysis;
