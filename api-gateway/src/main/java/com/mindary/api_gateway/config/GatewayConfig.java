@@ -13,7 +13,7 @@ public class GatewayConfig {
         return builder.routes()
                 .route("identity-service", r -> r
                         .path("/api/v1/auth/**")
-                        .uri("http://localhost:8081"))
+                        .uri("http://10.0.13.201:8081"))
                 .route("customer-route", r -> r
                         .path("/api/v1/customers/**")
                         .uri("http://localhost:8081"))

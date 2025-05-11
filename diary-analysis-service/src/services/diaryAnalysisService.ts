@@ -4,6 +4,7 @@ import { z, ZodVoid } from "zod";
 import sharp from 'sharp';
 import {DiaryAnalysisDto, Correlation, Symptom, Emotion} from '../types/diary';
 import DiaryAnalysisResult from "../models/DiaryAnalysisResult"
+import {Error, Model} from "mongoose";
 
 // const emotionAnalyzePrompt = ChatPromptTemplate.fromTemplate(
 //     "You are a helpful and enthusiastic psychological therapist. You can analyze the following personal diary entry carefully.\
@@ -144,10 +145,10 @@ export const analyzeDiaryEntry = async (
     try {
         const analysisResult: DiaryAnalysisDto = await combinedChain.invoke({ input }) as DiaryAnalysisDto;
 
-        let diaryAnalysisResultEntity = await DiaryAnalysisResult.create({
+        let diaryAnalysisResultEntity = await (DiaryAnalysisResult as Model<DiaryAnalysisDto>).create({
             senderId: userId,
             diaryId: diaryId
-        })
+        });
 
         if (analysisResult.emotion) {
             diaryAnalysisResultEntity.emotion = analysisResult.emotion;
