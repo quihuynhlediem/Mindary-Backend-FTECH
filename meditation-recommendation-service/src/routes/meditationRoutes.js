@@ -46,10 +46,11 @@ const router = express.Router();
 router.post('/create', MeditationController.createMeditation);
 
 
-router.get('/', MeditationController.getAllMeditations);
-router.get('/get/:id', MeditationController.getMeditationById);
+router.get('/all', MeditationController.getAllMeditations);
+router.get('/onscroll', MeditationController.getMeditationOnScroll);
+router.get('/meditation/:id', MeditationController.getMeditationById);
 
-router.post('/get/recommended', MeditationController.getRecommendedMeditation);
+router.post('/recommended', MeditationController.getRecommendedMeditation);
 
 router.delete('/delete/:id', MeditationController.deleteMeditation);
 router.put('/update/:id', MeditationController.updateMeditation);

@@ -35,25 +35,19 @@ const fetchAllTrackIds = async (body) => {
 const fetchTrackDataWithId = async (id) => {
     try {
         const response = await instance.get(`/single-tracks/${id}`);
-        const url = await urlInstance.get('/generate', {
-            params: {
-                type: 'SINGLE_TRACK',
-                id_slug: response.data.slug,
-            }
-        });
+
         const trackData = {
             meditation_id: response.data.id,
-            slug: response.data.slug,
             tags: response.data.tags,
             title: response.data.title,
             author: response.data.publisher.name,
+            media_url: response.data.media_paths[1],
             media_length: response.data.media_length,
             description: response.data.long_description,
             intention: response.data.ai_intention_summary.summary,
             transcripts: response.data.transcripts.transcript,
             reviews_summary: response.data.ai_user_reviews_summary.message.replace(/\*\*(.*?)\*\*/g, '$1'),
             picture_url: `https://libraryitems.insighttimer.com/${response.data.id}/pictures/tiny_rectangle_xlarge.jpeg`,
-            widget_url: url.data.iframe.src,
 
         }
         return trackData;
@@ -82,16 +76,15 @@ const storeMeditation = (meditations) => {
                 pageContent: meditation.reviews_summary,
                 metadata: {
                     meditation_id: meditation.meditation_id,
-                    slug: meditation.slug,
                     tags: meditation.tags,
                     title: meditation.title,
                     author: meditation.author,
+                    media_url: meditation.media_url,
                     media_length: meditation.media_length,
                     description: meditation.description,
                     intention: meditation.intention,
                     transcripts: meditation.transcripts,
                     picture_url: meditation.picture_url,
-                    widget_url: meditation.widget_url,
                 },
             });
         })
@@ -102,61 +95,6 @@ const storeMeditation = (meditations) => {
     }
 };
 
-
-// Test
-const saveMeditationToDB = async (meditations) => {
-    try {
-        const savedMeditations = Meditation.insertMany(meditations);
-        return savedMeditations;
-    } catch (error) {
-        console.error('Error saving meditation to DB:', error);
-        throw new Error('Failed to save meditation to the database');
-    }
-}
-
-const indexMeditation = async (savedMeditations) => {
-    try {
-        const docs = savedMeditations.map(meditation => {
-            return new Document({
-                pageContent: meditation.reviews_summary,
-                metadata: {
-                    meditation_id: meditation.meditation_id,
-                    slug: meditation.slug,
-                    tags: meditation.tags,
-                    title: meditation.title,
-                    author: meditation.author,
-                    media_length: meditation.media_length,
-                    description: meditation.description,
-                    intention: meditation.intention,
-                    transcripts: meditation.transcripts,
-                    picture_url: meditation.picture_url,
-                    widget_url: meditation.widget_url,
-                }
-            })
-        })
-
-        const response = await vectorStore.addDocuments(docs, {
-            ids: savedMeditations.map(m => m.meditation_id)
-        });
-        return response;
-    } catch (error) {
-        console.error('Error indexing meditation:', error);
-        throw new Error('Failed to index meditation in the database');
-    }
-}
-// const createMeditation = async (body) => {
-//     try {
-//         const meditations = await fetchTrackData(body);
-
-//         const storedMeditations = await saveMeditationToDB(meditations);
-
-//         const indexedMeditations = await indexMeditation(storedMeditations);
-//         return indexedMeditations;
-//     } catch (error) {
-//         console.error("Error creating meditation:", error);
-//         return { success: false, message: "An error occurred while creating the meditation. Please try again later." };
-//     }
-// }
 const createMeditation = async (body) => {
     try {
         // Create a new meditation
@@ -166,7 +104,7 @@ const createMeditation = async (body) => {
                 ids: meditations.map(m => m.meditation_id)
             }
         );
-        console.log('Resource:', resource);
+        //console.log('Resource:', resource);
         return resource;
     } catch (error) {
         console.error("Error creating meditation:", error);
@@ -177,21 +115,33 @@ const createMeditation = async (body) => {
 
 const getAllMeditations = async () => {
     try {
-        const meditations = await Meditation.find();
-        return {
-            success: true,
-            message: "All meditations retrieved successfully.",
-            data: meditations
-        };
+        const meditations = await Meditation.find().select('-embedding -intention -reviews_summary').lean();
+        return meditations;
     } catch (error) {
         console.error("Error retrieving meditations:", error);
-        return {
-            success: false,
-            message: "An error occurred while retrieving meditations.",
-            data: null
-        };
+        return null;
     }
 };
+
+const getMeditationOnScroll = async (page, limit) => {
+    try {
+        const offset = (page - 1) * limit;
+        const data = await Meditation
+            .find()
+            .select('-meditation_id -embedding -intention -reviews_summary')
+            // .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit)
+            .lean();
+
+        // const totalCount = data.length;
+        // console.log("Total count:", totalCount);
+        return data;
+    } catch (error) {
+        console.error("Error retrieving meditations:", error);
+        return { error };
+    }
+}
 
 const getMeditationById = async (meditationId) => {
     try {
@@ -212,29 +162,9 @@ const getRecommendedMeditation = async (analysis) => {
     try {
         //const prompt = buildSearchPrompt({ diaryAnalysis });
         const analysisObject = analysis;
-        //console.log("Analysis object:", analysisObject);
+
         const retrievedMeditations = await vectorStore.similaritySearch("How to have a good sleep ?", 3);
-        // if (!retrievedMeditations || retrievedMeditations.length === 0) {
-        //     throw new Error("No meditations found matching the criteria.");
-        // }
-        // console.log("Retrieved meditations:", retrievedMeditations);
 
-        // const meditationsContent = retrievedMeditations  
-        //     .map(doc => doc.pageContent);
-        // if (!meditationsContent) {
-        //     throw new Error("Retrieved meditations contain no content.");
-        // }
-        // console.log("Meditations content:", meditationsContent);
-
-        // const messages = await prompt.invoke({
-        //     question: prompt,
-        //     context: meditationsContent,
-        // });
-
-        // const answer = await llm.invoke(messages);
-        // console.log("LLM answer:", answer.content);
-
-        // return answer.toJSON().kwargs.content;
         const result = retrievedMeditations.map(meditation => {
             return {
                 title: meditation.metadata.title,
@@ -272,10 +202,11 @@ const deleteMeditation = async (id) => {
 
 export default {
     // fetchAllTrackIds,
-    // fetchTrackDataWithId,
+    fetchTrackDataWithId,
     // fetchTrackData,
     createMeditation,
     getAllMeditations,
+    getMeditationOnScroll,
     getMeditationById,
     updateMeditation,
     deleteMeditation,

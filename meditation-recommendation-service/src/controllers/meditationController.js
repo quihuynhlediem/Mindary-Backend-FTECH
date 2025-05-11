@@ -1,3 +1,4 @@
+import { response } from 'express';
 import MeditationService from '../services/meditationService.js';
 
 const createMeditation = async (req, res) => {
@@ -25,6 +26,29 @@ const getAllMeditations = async (req, res) => {
     }
 };
 
+const getMeditationOnScroll = async (req, res) => {
+    try {
+        // const { offset, limit } = req.body;
+        const page = Math.max(0, parseInt(req.query.page, 10) || 0);
+        const limit =  req.query.limit || 10;
+
+        // if (typeof offset !== 'number' || typeof limit !== 'number') {
+        //     return res.status(400).json({ message: 'Offset and limit must be numbers.' });
+        // }
+
+        const response = await MeditationService.getMeditationOnScroll(page, limit);
+
+        if (!response) {
+            return res.status(404).json({ message: 'No meditations found.' });
+        }
+        //console.log(response);
+        return res.json(response);
+    } catch (error) {
+        console.error('Error fetching meditations on scroll:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
 const getMeditationById = async (req, res) => {
     try {
         const meditation = await MeditationService.getMeditationById(req.params.id);
@@ -41,11 +65,11 @@ const getMeditationById = async (req, res) => {
 const getRecommendedMeditation = async (req, res) => {
     try {
         const recommendedMeditation = await MeditationService.getRecommendedMeditation(req.body);
-        
+
         if (!recommendedMeditation) {
             return res.status(404).json({ message: 'Recommended meditation not found' });
         }
-        
+
         return res.status(200).json(recommendedMeditation);
     } catch (error) {
         console.error('Error fetching recommended meditation:', error);
@@ -56,17 +80,17 @@ const getRecommendedMeditation = async (req, res) => {
 const updateMeditation = async (req, res) => {
     try {
         const { title, content } = req.body;
-        
+
         if (!title || !content) {
             return res.status(400).json({ message: 'Title and content are required.' });
         }
-        
+
         const updatedMeditation = await MeditationService.updateMeditation(req.params.id, title, content);
-        
+
         // if (!updatedMeditation) {
         //     return res.status(404).json({ message: 'Meditation not found' });
         // }
-        
+
         return res.status(200).json(updatedMeditation);
     } catch (error) {
         console.error('Error updating meditation:', error);
@@ -88,6 +112,7 @@ const deleteMeditation = async (req, res) => {
 export default {
     createMeditation,
     getAllMeditations,
+    getMeditationOnScroll,
     getMeditationById,
     updateMeditation,
     deleteMeditation,
