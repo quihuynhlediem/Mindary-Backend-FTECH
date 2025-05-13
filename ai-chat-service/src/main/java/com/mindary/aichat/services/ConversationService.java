@@ -28,8 +28,13 @@ public class ConversationService {
     private final ChatMessageRepository chatMessageRepository;
     private final EmbeddingService embeddingService;
     private final GeminiService geminiService;
+    private final DiaryAnalysisService diaryAnalysisService;
 
-    public Conversation createConversation(UUID userId, String initialMessage, String aiResponse) {
+    public Conversation createConversation(UUID userId, String initialMessage) {
+        String diaryInsight = diaryAnalysisService.getLatestAnalysisSummary(userId.toString());
+
+        String aiResponse = geminiService.generateResponse(initialMessage, null, diaryInsight);
+
         // create and save conversation
         Conversation conversation = new Conversation();
         conversation.setUserId(userId);
@@ -147,12 +152,18 @@ public class ConversationService {
     }
 
     public ChatMessage saveMessage(String conversationId, UUID userId, String message, String response) {
+        // Get diary analysis for context
+        String diaryInsight = diaryAnalysisService.getLatestAnalysisSummary(userId.toString());
+
+        // Generate AI response with diary context
+        String aiResponse = geminiService.generateResponse(message, conversationId, diaryInsight);
+
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setConversationId(conversationId);
         chatMessage.setUserId(userId);
         chatMessage.setType(MessageType.USER);
         chatMessage.setMessage(message);
-        chatMessage.setResponse(response);
+        chatMessage.setResponse(aiResponse);
         chatMessage.setTimestamp(LocalDateTime.now());
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
 
@@ -160,7 +171,7 @@ public class ConversationService {
         embeddingService.createEmbedding(
                 savedMessage.getId(),
                 conversationId,
-                message + "\n" + response
+                message + "\n" + aiResponse
         );
 
         return savedMessage;

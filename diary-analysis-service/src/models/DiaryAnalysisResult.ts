@@ -63,7 +63,7 @@ const diarySchema = new mongoose.Schema(
         correlations: [correlationSchema],
         symptoms: [symptomSchema],
     },
-    {timestamps: true}
+    { timestamps: true }
 );
 
 diarySchema.index({ senderId: 1 })
