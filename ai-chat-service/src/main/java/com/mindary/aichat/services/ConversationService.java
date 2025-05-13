@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.mindary.aichat.models.ChatMessage;
@@ -174,6 +175,34 @@ public class ConversationService {
                 message + "\n" + aiResponse
         );
 
+        // Background: ask Gemini for follow-up suggestion
+        new Thread(() -> {
+            try {
+                GeminiService.FollowUpSuggestion suggestion = geminiService.getFollowUpSuggestion(message, diaryInsight, mode);
+                if (suggestion != null) {
+                    Conversation conversation = conversationRepository.findById(conversationId).orElse(null);
+                    if (conversation != null) {
+                        conversation.setFollowUpActive(true);
+                        conversation.setFollowUpCount(0); // reset on new suggestion
+                        conversation.setFollowUpDue(suggestion.due);
+                        conversation.setFollowUpPrompt(suggestion.prompt);
+                        conversation.setFollowUpReason(suggestion.reason);
+                        conversationRepository.save(conversation);
+                    }
+                } else {
+                    Conversation conversation = conversationRepository.findById(conversationId).orElse(null);
+                    if (conversation != null) {
+                        conversation.setFollowUpActive(false);
+                        conversation.setFollowUpPrompt(null);
+                        conversation.setFollowUpReason(null);
+                        conversationRepository.save(conversation);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error in background follow-up suggestion", e);
+            }
+        }).start();
+
         return savedMessage;
     }
 
@@ -197,6 +226,55 @@ public class ConversationService {
         } catch (Exception e) {
             log.error("Error updating conversation title: {}", e.getMessage());
             throw new RuntimeException("Failed to update conversation title", e);
+        }
+    }
+
+    @Scheduled(fixedRate = 60 * 60 * 1000)
+    public void processDueFollowUps() {
+        List<Conversation> dueConvs = conversationRepository.findAll().stream()
+                .filter(conv -> conv.isFollowUpActive()
+                && conv.getFollowUpDue() != null
+                && conv.getFollowUpDue().isBefore(LocalDateTime.now())
+                && conv.getFollowUpCount() < 3)
+                .toList();
+        for (Conversation conv : dueConvs) {
+            // Check if user has replied since last AI message
+            List<ChatMessage> messages = chatMessageRepository.findByConversationIdOrderByTimestampAsc(conv.getId());
+            boolean userReplied = false;
+            for (int i = messages.size() - 1; i >= 0; i--) {
+                ChatMessage msg = messages.get(i);
+                if (msg.getType() == MessageType.AI && msg.getMessage().equals(conv.getFollowUpPrompt())) {
+                    break;
+                }
+                if (msg.getType() == MessageType.USER) {
+                    userReplied = true;
+                    break;
+                }
+            }
+            if (userReplied) {
+                conv.setFollowUpActive(false);
+                conversationRepository.save(conv);
+                continue;
+            }
+
+            ChatMessage followUp = new ChatMessage();
+            followUp.setConversationId(conv.getId());
+            followUp.setUserId(conv.getUserId());
+            followUp.setType(MessageType.AI);
+            followUp.setMessage(conv.getFollowUpPrompt());
+            followUp.setResponse(null);
+            followUp.setTimestamp(LocalDateTime.now());
+            chatMessageRepository.save(followUp);
+
+            conv.setFollowUpCount(conv.getFollowUpCount() + 1);
+            if (conv.getFollowUpCount() >= 3) {
+                conv.setFollowUpActive(false);
+            } else {
+                // Space out next follow-up: +3 days, +1 week, etc.
+                int days = conv.getFollowUpCount() == 1 ? 3 : 7;
+                conv.setFollowUpDue(LocalDateTime.now().plusDays(days));
+            }
+            conversationRepository.save(conv);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.mindary.aichat.services;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +197,69 @@ public class GeminiService {
             FollowUpAnalysis analysis = new FollowUpAnalysis();
             analysis.setNeedsFollowUp(false);
             return analysis;
+        }
+    }
+
+    public static class FollowUpSuggestion {
+
+        public boolean needed;
+        public String reason;
+        public String prompt;
+        public LocalDateTime due;
+    }
+
+    /**
+     * Asks Gemini if a follow-up is needed, and if so, when and what to say.
+     * Returns null if no follow-up is needed.
+     */
+    public FollowUpSuggestion getFollowUpSuggestion(String userMessage, String diaryInsight, String mode) {
+        try {
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("You are a mental health companion. Analyze the following user message and diary insight.\n");
+            prompt.append("If a follow-up is needed, reply in this JSON format: {\"needed\":true,\"reason\":\"short reason\",\"prompt\":\"what to say\",\"due\":\"yyyy-MM-dd\"}. If not, reply: {\"needed\":false}.\n");
+            prompt.append("User message: ").append(userMessage).append("\n");
+            if (diaryInsight != null && !diaryInsight.isEmpty()) {
+                prompt.append("Diary insight: ").append(diaryInsight).append("\n");
+            }
+            prompt.append("Mode: ").append(mode == null ? "therapist" : mode).append("\n");
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("x-goog-api-key", geminiConfig.getApiKey());
+
+            Map<String, Object> requestBody = new HashMap<>();
+            Map<String, Object> contents = new HashMap<>();
+            contents.put("parts", new Object[]{
+                Map.of("text", prompt.toString())
+            });
+            requestBody.put("contents", new Object[]{contents});
+            requestBody.put("generationConfig", Map.of(
+                    "temperature", 0.7,
+                    "topK", 40,
+                    "topP", 0.95,
+                    "maxOutputTokens", 256
+            ));
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+            String response = restTemplate.postForObject(
+                    GEMINI_API_URL + "?key=" + geminiConfig.getApiKey(),
+                    request,
+                    String.class
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+            String json = root.path("candidates").get(0)
+                    .path("content").path("parts").get(0)
+                    .path("text").asText();
+            FollowUpSuggestion suggestion = mapper.readValue(json, FollowUpSuggestion.class);
+            if (!suggestion.needed) {
+                return null;
+            }
+            return suggestion;
+        } catch (Exception e) {
+            log.error("Error getting follow-up suggestion from Gemini", e);
+            return null;
         }
     }
 }
