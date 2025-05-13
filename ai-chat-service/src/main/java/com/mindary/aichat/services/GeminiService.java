@@ -26,7 +26,7 @@ public class GeminiService {
     private final GeminiConfig geminiConfig;
     private final RestTemplate restTemplate;
     private final EmbeddingService embeddingService;
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
+    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
     private static final String BASE_PROMPT = """
             You are a compassionate and professional mental health counselor. Your responses should be:
             - Empathetic and understanding

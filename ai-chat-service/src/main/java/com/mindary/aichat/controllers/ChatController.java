@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mindary.aichat.dto.ChatRequest;
-import com.mindary.aichat.dto.amqp.DiaryAnalysisDto;
 import com.mindary.aichat.models.ChatMessage;
 import com.mindary.aichat.models.Conversation;
 import com.mindary.aichat.repositories.ChatMessageRepository;
 import com.mindary.aichat.services.ConversationService;
 import com.mindary.aichat.services.GeminiService;
-import com.mindary.aichat.services.UserDiaryInsightService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +35,6 @@ public class ChatController {
     private final GeminiService geminiService;
     private final ConversationService conversationService;
     private final ChatMessageRepository chatMessageRepository;
-    private final UserDiaryInsightService userDiaryInsightService;
-    // TODO: Inject UserContextService
-    // private final UserContextService userContextService;
     private static final int CHAT_HISTORY_LIMIT = 7; // Limit to last 7 messages for development v1
 
     @PostMapping("/conversations")
@@ -79,25 +74,10 @@ public class ChatController {
                 .limit(CHAT_HISTORY_LIMIT)
                 .toList();
 
-        // --- Fetch and Format Diary Insight ---
-        String diaryInsightString = null;
-        try {
-            DiaryAnalysisDto latestInsight = userDiaryInsightService.getLatestInsight(chatRequest.getUserId());
-            if (latestInsight != null) {
-                diaryInsightString = userDiaryInsightService.formatInsightForPrompt(latestInsight);
-                log.info("Retrieved diary insight for user: {}", chatRequest.getUserId());
-            } else {
-                log.info("No diary insight found for user: {}", chatRequest.getUserId());
-            }
-        } catch (Exception e) {
-            log.error("Error retrieving diary insight for user {}: {}", chatRequest.getUserId(), e.getMessage());
-        }
-        // --- End Fetch Diary Insight ---
-
         String response = geminiService.generateResponse(
                 chatRequest.getMessage(),
                 conversationId,
-                diaryInsightString // Pass the formatted insight string (can be null)
+                null // Pass the formatted insight string (can be null)
         );
 
         // Let ConversationService handle the message saving and analysis
