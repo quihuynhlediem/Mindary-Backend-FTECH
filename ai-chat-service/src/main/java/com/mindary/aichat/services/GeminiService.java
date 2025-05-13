@@ -27,65 +27,58 @@ public class GeminiService {
     private final RestTemplate restTemplate;
     private final EmbeddingService embeddingService;
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
-    private static final String BASE_PROMPT = """
-            You are a compassionate and professional mental health counselor. Your responses should be:
-            - Empathetic and understanding
-            - Professional yet warm and approachable
-            - Clear and easy to understand
-            - Focused on emotional support and practical guidance
-            - Respectful of privacy and confidentiality
-            
-            Guidelines:
-            1. Use simple, clear language unless medical terms are specifically requested
-            2. Maintain a supportive and non-judgmental tone
-            3. Avoid making definitive medical diagnoses
-            4. Encourage professional help when appropriate
-            5. Prioritize user safety and well-being
-            6. Respect boundaries and privacy
-            7. Focus on emotional support and coping strategies
-            
-            Remember: You're here to listen, support, and guide, not to replace professional medical advice.
+    private static final String THERAPIST_PROMPT = """
+            You are a compassionate, professional mental health therapist. Your responses should be:
+            - Warm, empathetic, and supportive
+            - Professional, but approachable
+            - Provide clear, evidence-based advice
+            - Use reflective listening
+            - Keep responses concise unless the user asks for more detail
+            If the user requests a detailed explanation, provide a longer, structured response. Otherwise, keep it short and focused.
             """;
 
-    public String generateResponse(String message, String conversationId, String diaryInsight) {
+    private static final String HOMIE_PROMPT = """
+            You are the user's supportive best friend ("homie"). Your responses should be:
+            - Super casual, friendly, and relatable
+            - Use slang, emojis, and humor (if appropriate)
+            - Give short, practical advice
+            - Never sound like a robot or therapist
+            If the user asks for more details, give a longer but still casual explanation. Otherwise, keep it brief and chill.
+            """;
+
+    public String generateResponse(String message, String conversationId, String diaryInsight, String mode) {
+        String selectedMode = (mode == null || (!mode.equalsIgnoreCase("homie") && !mode.equalsIgnoreCase("therapist"))) ? "therapist" : mode.toLowerCase();
         try {
-            StringBuilder promptBuilder = new StringBuilder(BASE_PROMPT);
+            StringBuilder promptBuilder = new StringBuilder(selectedMode.equals("homie") ? HOMIE_PROMPT : THERAPIST_PROMPT);
 
             // Get context through EmbeddingService directly
             if (conversationId != null && !conversationId.isEmpty()) {
                 List<String> similarMessages = embeddingService.findSimilarMessages(
                         conversationId,
                         message,
-                        5 // Get top 5 similar messages
+                        3 // 3 for more focused context
                 );
                 if (!similarMessages.isEmpty()) {
-                    promptBuilder.append("\nRelevant context from previous conversations:\n")
+                    promptBuilder.append("\nPrevious conversation context:\n")
                             .append(String.join("\n\n", similarMessages))
                             .append("\n");
                 }
             }
 
             if (diaryInsight != null && !diaryInsight.isEmpty()) {
-                promptBuilder.append("\nRelevant diary insight:\n")
+                promptBuilder.append("\nBased on your diary entries, I've noticed:\n")
                         .append(diaryInsight)
-                        .append("\n");
+                        .append("\n\nLet me respond to your message while keeping these insights in mind.");
             }
 
-            promptBuilder.append("\nUser's current message: ").append(message);
-
-            promptBuilder.append("\n\nProvide a thoughtful, empathetic response that:");
-            promptBuilder.append("\n1. Acknowledges the user's feelings");
-            promptBuilder.append("\n2. Offers supportive guidance");
-            promptBuilder.append("\n3. Suggests practical coping strategies when appropriate");
-            promptBuilder.append("\n4. Maintains a warm, professional tone");
-            promptBuilder.append("\n5. Don't be too long, keep it concise and focused");
+            promptBuilder.append("\nUser's message: ").append(message);
 
             // Prepare headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("x-goog-api-key", geminiConfig.getApiKey());
 
-            // Prepare request body
+            // Prepare request body with adjusted parameters for more natural responses
             Map<String, Object> requestBody = new HashMap<>();
             Map<String, Object> contents = new HashMap<>();
             contents.put("parts", new Object[]{
@@ -93,15 +86,11 @@ public class GeminiService {
             });
             requestBody.put("contents", new Object[]{contents});
             requestBody.put("generationConfig", Map.of(
-                    "temperature", 0.7,
-                    "topK", 40,
+                    "temperature", selectedMode.equals("homie") ? 0.95 : 0.85, // Homie is more random
+                    "topK", selectedMode.equals("homie") ? 50 : 45,
                     "topP", 0.95,
-                    "maxOutputTokens", 1024
+                    "maxOutputTokens", 600 // Longer for detailed, shorter for normal
             ));
-            // a workaround to avoid a bug in the Gemini API, this means that the response will be generated in a synchronous way.
-            // temperature: 0.7 - 1.0: higher value means more randomness
-            // topK: 40 - 50: higher value means more randomness
-            // topP: 0.95 - 1.0: higher value means more randomness
 
             // Make request
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
@@ -120,8 +109,9 @@ public class GeminiService {
 
         } catch (Exception e) {
             log.error("Error generating response from Gemini", e);
-            return "I apologize, but I'm having trouble processing your message right now. "
-                    + "Please know that your well-being is important, and I'm here to listen when you're ready to try again.";
+            return selectedMode.equals("homie")
+                    ? "Yo, I'm having some trouble connecting right now, but I'm here for you! Wanna try sending that again?"
+                    : "I'm having trouble connecting right now, but I'm here for you. Would you like to try sharing that again? I'm really interested in what you have to say.";
         }
     }
 

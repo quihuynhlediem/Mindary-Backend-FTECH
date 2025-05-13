@@ -33,7 +33,7 @@ public class ConversationService {
     public Conversation createConversation(UUID userId, String initialMessage) {
         String diaryInsight = diaryAnalysisService.getLatestAnalysisSummary(userId.toString());
 
-        String aiResponse = geminiService.generateResponse(initialMessage, null, diaryInsight);
+        String aiResponse = geminiService.generateResponse(initialMessage, null, diaryInsight, "therapist");
 
         // create and save conversation
         Conversation conversation = new Conversation();
@@ -151,12 +151,12 @@ public class ConversationService {
         }).toList();
     }
 
-    public ChatMessage saveMessage(String conversationId, UUID userId, String message, String response) {
+    public ChatMessage saveMessage(String conversationId, UUID userId, String message, String response, String mode) {
         // Get diary analysis for context
         String diaryInsight = diaryAnalysisService.getLatestAnalysisSummary(userId.toString());
 
         // Generate AI response with diary context
-        String aiResponse = geminiService.generateResponse(message, conversationId, diaryInsight);
+        String aiResponse = geminiService.generateResponse(message, conversationId, diaryInsight, mode == null ? "therapist" : mode);
 
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setConversationId(conversationId);
@@ -184,5 +184,19 @@ public class ConversationService {
                 5
         );
         return String.join("\n\n", similarMessages);
+    }
+
+    public Conversation updateConversationTitle(String conversationId, String newTitle) {
+        try {
+            log.info("Updating title for conversation: {} to: {}", conversationId, newTitle);
+            Conversation conversation = conversationRepository.findById(conversationId)
+                    .orElseThrow(() -> new RuntimeException("Conversation not found"));
+
+            conversation.setTitle(newTitle);
+            return conversationRepository.save(conversation);
+        } catch (Exception e) {
+            log.error("Error updating conversation title: {}", e.getMessage());
+            throw new RuntimeException("Failed to update conversation title", e);
+        }
     }
 }

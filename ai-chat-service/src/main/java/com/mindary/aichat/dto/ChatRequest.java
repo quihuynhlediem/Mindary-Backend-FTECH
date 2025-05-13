@@ -14,4 +14,7 @@ public class ChatRequest {
 
     @NotBlank
     private String message;
+
+    // "therapist" (default) or "homie"
+    private String mode;
 }
