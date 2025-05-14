@@ -29,12 +29,14 @@ const getAllMeditations = async (req, res) => {
 
 const loadData = async (req, res) => {
     try {
-        const { page = 1, limit = 10} = req.query;
+        const page = parseInt(req.query.page, 10) || 0;
+        const limit = parseInt(req.query.limit, 10) || 10;
+
         if (typeof page !== 'number' || typeof limit !== 'number') {
             return res.status(400).json({ message: 'Offset and limit must be numbers.' });
         }
 
-        const response = await MeditationService.getMeditationOnScroll(page, limit);
+        const response = await MeditationService.loadData(page, limit);
 
         if (!response) {
             return res.status(404).json({ message: 'No meditations found.' });
