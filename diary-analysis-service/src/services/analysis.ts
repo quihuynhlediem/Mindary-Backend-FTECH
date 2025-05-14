@@ -30,7 +30,7 @@ export const getEmotionLevelFromAnalysis = async (userId: string, date: string) 
     for (let i = 6; i >= 0; i--) {
         let endDate = new Date(date);
         endDate.setDate(endDate.getDate() - i);
-        console.log("endDate", endDate);
+        // console.log("endDate", endDate);
         endDate.setHours(23, 59, 59, 999); // End of the day
         const startDate = new Date(endDate);
         startDate.setHours(0, 0, 0, 0); // Start of the day
