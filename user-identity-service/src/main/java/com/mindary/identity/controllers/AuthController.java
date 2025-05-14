@@ -48,6 +48,7 @@ public class AuthController {
         );
 
         UUID userId = extractUserId(userDetails);
+        String salt = extractSalt(userDetails);
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
@@ -56,6 +57,7 @@ public class AuthController {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(userId)
+                .salt(salt)
                 .build();
 
         return ResponseEntity.ok(authResponse);
@@ -73,10 +75,15 @@ public class AuthController {
                 signUpRequest.getUsername(),
                 signUpRequest.getPassword(),
                 signUpRequest.getEmail(),
+                signUpRequest.getPublicKey(),
+                signUpRequest.getSalt(),
+                signUpRequest.getEncryptedPrivateKey(),
+                signUpRequest.getPrivateKeyIv(),
                 User.UserRole.CUSTOMER
         );
 
         UUID userId = extractUserId(userDetails);
+        String salt = extractSalt(userDetails);
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
@@ -85,6 +92,7 @@ public class AuthController {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(userId)
+                .salt(salt)
                 .build();
 
         return ResponseEntity.ok(authResponse);
@@ -131,5 +139,9 @@ public class AuthController {
 
     private UUID extractUserId(UserDetails userDetails) {
         return ((SystemUserDetails) userDetails).getId();
+    }
+
+    private String extractSalt(UserDetails userDetails) {
+        return ((SystemUserDetails) userDetails).getSalt();
     }
 }

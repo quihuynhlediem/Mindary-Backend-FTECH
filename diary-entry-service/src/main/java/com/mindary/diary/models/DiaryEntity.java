@@ -2,13 +2,11 @@ package com.mindary.diary.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = "images")
 public class DiaryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,8 +28,16 @@ public class DiaryEntity {
     private UUID id;
 
     @NotBlank(message = "Diary content should not be empty")
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
+
+    @NotBlank(message = "Diary encrypt key should not be empty")
+    @Column(name = "aes_key", columnDefinition = "TEXT")
+    private String aesKey;
+
+    @NotBlank(message = "IV should not be empty")
+    @Column(name = "iv", columnDefinition = "TEXT")
+    private String aesIv;
 
     @Column(name = "user_id")
     private UUID userId;

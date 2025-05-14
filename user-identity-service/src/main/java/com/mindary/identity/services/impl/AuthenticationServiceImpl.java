@@ -23,10 +23,7 @@ import java.security.Key;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -63,15 +60,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public UserDetails registerUser(String userName, String password, String email, User.UserRole userRole) {
+    public UserDetails registerUser(String userName, String password, String email, String publicKey, String salt, String encryptedPrivateKey, String privateKeyIv, User.UserRole userRole) {
         if (userRole.equals(User.UserRole.CUSTOMER)) {
-            CustomerEntity tenant = CustomerEntity.builder()
+            CustomerEntity customer = CustomerEntity.builder()
                     .username(userName)
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .role(userRole)
+                    .randomSalt(salt)
+                    .publicKey(publicKey)
+                    .encryptedPrivateKey(encryptedPrivateKey)
+                    .privateKeyIv(privateKeyIv)
                     .build();
-            customerService.save(tenant);
+            customerService.save(customer);
         }
         return userDetailsService.loadUserByUsername(email);
     }
@@ -192,5 +193,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private Key getSigningKey() {
         byte[] keyBytes = secretKey.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private String randomSalt() {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] salt = new byte[16];
+        secureRandom.nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
     }
 }

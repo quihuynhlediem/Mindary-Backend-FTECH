@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class AnalysisResultDto {
-    private UUID senderId;
+    private UUID userId;
     private UUID diaryId;
     private EmotionDto emotion;
     private List<CorrelationDto> correlations;

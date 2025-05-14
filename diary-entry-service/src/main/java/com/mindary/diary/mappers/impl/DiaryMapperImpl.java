@@ -4,7 +4,6 @@ import com.mindary.diary.dto.DiaryDto;
 import com.mindary.diary.mappers.Mapper;
 import com.mindary.diary.models.DiaryEntity;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.engine.spi.Managed;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

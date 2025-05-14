@@ -19,6 +19,8 @@ public class CustomerDto extends UserDto {
     private String age;
     private String gender;
     private String otp;
+    private String encryptedPrivateKey;
+    private String privateKeyIv;
     private int hour;
     private int minute;
     private String ampm;

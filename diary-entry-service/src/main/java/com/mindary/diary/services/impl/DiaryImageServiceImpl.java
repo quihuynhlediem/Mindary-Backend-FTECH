@@ -7,11 +7,16 @@ import com.mindary.diary.services.DiaryImageService;
 import com.mindary.diary.services.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
-import java.util.List;
-import java.util.Set;
+import java.net.URL;
+import java.time.Duration;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +26,10 @@ public class DiaryImageServiceImpl implements DiaryImageService {
 
     private final DiaryImageRepository diaryImageRepository;
     private final S3Service s3Service;
+    private final S3Presigner s3Presigner;
+
+    @Value(value = "${aws.s3.bucketname}")
+    private String bucketName;
 
     @Override
     public DiaryImage save(DiaryImage diaryImage) {
@@ -49,5 +58,21 @@ public class DiaryImageServiceImpl implements DiaryImageService {
                     }
                 })
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public ArrayList<DiaryImage> findImageByDiaryId(UUID diaryId) {
+        return diaryImageRepository.findDiaryImagesByDiary_Id(diaryId);
+    }
+
+    @Override
+    public String generatePresignedUrl(String s3Key) {
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(30))
+                .getObjectRequest(builder -> builder.bucket(bucketName).key(s3Key))
+                .build();
+        PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(getObjectPresignRequest);
+        URL presignedUrl = presignedGetObjectRequest.url();
+        return presignedUrl.toString();
     }
 }

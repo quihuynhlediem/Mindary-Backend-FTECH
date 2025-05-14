@@ -2,7 +2,7 @@ import { ChatPromptTemplate } from "@langchain/core/prompts"
 import { llmModel } from "../lib/modelConfiguration"
 import { z, ZodVoid } from "zod";
 import sharp from 'sharp';
-import {DiaryAnalysisDto, Correlation, Symptom, Emotion} from '../types/diary';
+import { DiaryAnalysisDto, Correlation, Symptom, Emotion } from '../types/diary';
 import DiaryAnalysisResult from "../models/DiaryAnalysisResult"
 
 // const emotionAnalyzePrompt = ChatPromptTemplate.fromTemplate(
@@ -162,10 +162,10 @@ export const analyzeDiaryEntry = async (
 
         if (analysisResult.symptoms) {
             diaryAnalysisResultEntity.symptoms = analysisResult.symptoms.map((symptom: Symptom) => ({
-                    name: symptom.name,
-                    risk: symptom.risk,
-                    description: symptom.description,
-                    suggestions: symptom.suggestions,
+                name: symptom.name,
+                risk: symptom.risk,
+                description: symptom.description,
+                suggestions: symptom.suggestions,
             }))
         }
         console.log(diaryAnalysisResultEntity)
@@ -179,16 +179,16 @@ export const analyzeDiaryEntry = async (
 
 // Get diary analysis by diaryId
 export const getDiaryAnalysis = async (diaryId: string) => {
-    return DiaryAnalysisResult.findOne({diaryId});
+    return DiaryAnalysisResult.findOne({ diaryId });
 };
 
 // Update diary analysis by diaryId
 export const updateDiaryAnalysis = async (diaryId: string, updatedData: any) => {
-    return DiaryAnalysisResult.findOneAndUpdate({diaryId}, updatedData, {new: true});
+    return DiaryAnalysisResult.findOneAndUpdate({ diaryId }, updatedData, { new: true });
 };
 
 // Delete diary analysis by diaryId
 export const deleteDiaryAnalysis = async (diaryId: string) => {
-    return DiaryAnalysisResult.findOneAndDelete({diaryId});
+    return DiaryAnalysisResult.findOneAndDelete({ diaryId });
 };
 
