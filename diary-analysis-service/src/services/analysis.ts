@@ -23,6 +23,36 @@ export const getDiaryAnalysis = async (userId: string, date: string) => {
     return diaries;
 };
 
+export const getEmotionLevelFromAnalysis = async (userId: string, date: string) => {
+    // const dateObj = new Date(date);
+    let emotionLevels: number[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+        let endDate = new Date(date);
+        endDate.setDate(endDate.getDate() - i);
+        console.log("endDate", endDate);
+        endDate.setHours(23, 59, 59, 999); // End of the day
+        const startDate = new Date(endDate);
+        startDate.setHours(0, 0, 0, 0); // Start of the day
+        // const formattedDate = endDate.toISOString().split("T")[0]; // Format date to YYYY-MM-DD
+
+        const diary = await Analysis.findOne({
+            userId: userId,
+            createdAt: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            },
+        });
+        if (!diary) {
+            emotionLevels.push(0);
+        } else {
+            const emotionLevel = diary.emotionObjects[0].emotionLevel;
+            emotionLevels.push(Number(emotionLevel));
+        }
+    }
+    return { emotionLevels };
+}
+
 const combinedAnalyzePrompt = ChatPromptTemplate.fromTemplate(
     "You are a helpful and enthusiastic psychological therapist. Carefully analyze the following personal diary entry.\n\n\
     **Step 1: Emotion Analysis**\n\
@@ -90,6 +120,8 @@ export const analyzeDiaryEntry = async (
             const fileBuffer = await sharp(uploadFile.buffer).jpeg({ quality: 80 }).toBuffer();
             imageUrl = await uploadToS3(fileBuffer, imageName, uploadFile.mimetype);
         }
+
+        await Analysis.deleteMany({ userId: userId, diaryId: diaryId });
 
         const newDiary = new Analysis({
             userId: userId,
