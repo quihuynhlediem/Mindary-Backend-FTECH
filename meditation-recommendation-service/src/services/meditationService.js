@@ -1,38 +1,91 @@
 import Meditation from '../database/models/Meditation.js';
-import { prompt, llm } from '../config/llmModelConfig.js';
+import { prompt, llm, embeddings } from '../config/llmModelConfig.js';
 import { vectorStore } from '../database/connection.js';
 import { Document } from "@langchain/core/documents";
 import { buildSearchPrompt } from '../utils/prompt.js';
 import { instance, urlInstance } from '../utils/axiosInstance.js';
-import { ObjectId } from 'mongodb';
+import Analysis from '../database/models/Analysis.js';
 
-/**
-* Method to fetch all track IDs from the API.
-* @returns List of track IDs.
-*/
-const fetchAllTrackIds = async (body) => {
-    try {
-        const response = await instance.get('/single-tracks/filter', {
-            params: {
-                content_langs: 'en',
-                content_types: 'guided,talks',
-                device_lang: 'en',
-                offset: body.offset || 0, // default offset
-                size: body.size || 3, // default size
-                sort_option: 'most_played',
-            }
-        });
-        const trackIds = response.data.map(track => track.item_summary.library_item_summary.id);
 
-        return trackIds;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        throw new Error('Failed to fetch data from the API');
-    }
+// GET
+const getAllMeditations = async () => {
+    const data = await Meditation.find().select('-embedding -intention -reviews_summary').lean();
+    return data;
+};
+
+const getMeditationById = async (meditationId) => {
+    const meditation = await Meditation.findById(meditationId);
+    return meditation;
+};
+
+const loadData = async (page, limit) => {
+    const offset = (page - 1) * limit;
+    const data = await Meditation
+        .find()
+        .select('-meditation_id -embedding -intention -reviews_summary')
+        // .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit)
+        .lean();
+    return data;
 }
 
-// Fetch track data using the track ID
-const fetchTrackDataWithId = async (id) => {
+
+const getRecommendations = async (userId, date) => {
+    const analysis = await getDiaryAnalysis(userId, date);
+    const question = await buildSearchPrompt(analysis);
+    // console.log("Question:", question);
+    const embedding = await embeddings.embedQuery(question);
+    const retrievedMeditations = await vectorStore.similaritySearchVectorWithScore(embedding, 3);
+
+    // const result = retrievedMeditations.map(meditation => {
+    //     return {
+    //         title: meditation.metadata.title,
+    //         intention: meditation.metadata.intention,
+    //     }
+    // })
+    console.log("Recommended meditation:", retrievedMeditations);
+    return retrievedMeditations;
+};
+
+
+// CREATE
+const createMeditation = async (body) => {
+    const meditations = await fetchData(body);
+    const resource = await vectorStore.addDocuments(createDocumentFromResource(meditations),
+        {
+            ids: meditations.map(m => m.meditation_id)
+        }
+    );
+    //console.log('Resource:', resource);
+    return resource;
+};
+
+
+// DELETE
+const deleteMeditation = async (id) => {
+    return await vectorStore.delete({ ids: [id] });
+};
+
+
+
+// FUNCTION
+const fetchAllTrackIds = async (body) => {
+    const response = await instance.get('/single-tracks/filter', {
+        params: {
+            content_langs: 'en',
+            content_types: 'guided,talks',
+            device_lang: 'en',
+            offset: body.offset || 0, // default offset
+            size: body.size || 3, // default size
+            sort_option: 'most_played',
+        }
+    });
+    const trackIds = response.data.map(track => track.item_summary.library_item_summary.id);
+    return trackIds;
+}
+
+const fetchDataWithTrackId = async (id) => {
     try {
         const response = await instance.get(`/single-tracks/${id}`);
 
@@ -57,11 +110,11 @@ const fetchTrackDataWithId = async (id) => {
     }
 }
 
-// Fetch all track data using the track IDs
-const fetchTrackData = async (body) => {
+
+const fetchData = async (body) => {
     try {
         const trackIds = await fetchAllTrackIds(body);
-        const tracks = await Promise.all(trackIds.map(id => fetchTrackDataWithId(id)));
+        const tracks = await Promise.all(trackIds.map(id => fetchDataWithTrackId(id)));
         return tracks;
     } catch (error) {
         console.error('Error fetching track data:', error);
@@ -69,7 +122,7 @@ const fetchTrackData = async (body) => {
     }
 }
 
-const storeMeditation = (meditations) => {
+const createDocumentFromResource = (meditations) => {
     try {
         const result = meditations.map(meditation => {
             return new Document({
@@ -95,120 +148,33 @@ const storeMeditation = (meditations) => {
     }
 };
 
-const createMeditation = async (body) => {
-    try {
-        // Create a new meditation
-        const meditations = await fetchTrackData(body);
-        const resource = await vectorStore.addDocuments(storeMeditation(meditations),
-            {
-                ids: meditations.map(m => m.meditation_id)
-            }
-        );
-        //console.log('Resource:', resource);
-        return resource;
-    } catch (error) {
-        console.error("Error creating meditation:", error);
-        return { success: false, message: "An error occurred while creating the meditation. Please try again later." };
-    }
-};
 
+const getDiaryAnalysis = async (userId, date) => {
+    // Parse the date and create a range for the whole day
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Start of the day
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999); // End of the day
 
-const getAllMeditations = async () => {
-    try {
-        const meditations = await Meditation.find().select('-embedding -intention -reviews_summary').lean();
-        return meditations;
-    } catch (error) {
-        console.error("Error retrieving meditations:", error);
-        return null;
-    }
-};
-
-const getMeditationOnScroll = async (page, limit) => {
-    try {
-        const offset = (page - 1) * limit;
-        const data = await Meditation
-            .find()
-            .select('-meditation_id -embedding -intention -reviews_summary')
-            // .sort({ createdAt: -1 })
-            .skip(offset)
-            .limit(limit)
-            .lean();
-
-        // const totalCount = data.length;
-        // console.log("Total count:", totalCount);
-        return data;
-    } catch (error) {
-        console.error("Error retrieving meditations:", error);
-        return { error };
-    }
-}
-
-const getMeditationById = async (meditationId) => {
-    try {
-
-        const meditation = await Meditation.findById(meditationId);
-        return meditation;
-    } catch (error) {
-        console.error("Error retrieving meditation by ID:", error);
-        return {
-            success: false,
-            message: "An error occurred while retrieving the meditation.",
-            data: null
-        };
-    }
-};
-
-const getRecommendedMeditation = async (analysis) => {
-    try {
-        //const prompt = buildSearchPrompt({ diaryAnalysis });
-        const analysisObject = analysis;
-
-        const retrievedMeditations = await vectorStore.similaritySearch("How to have a good sleep ?", 3);
-
-        const result = retrievedMeditations.map(meditation => {
-            return {
-                title: meditation.metadata.title,
-                intention: meditation.metadata.intention,
-            }
+    const analysis = await Analysis
+        .findOne({
+            userId: userId,
+            createdAt: {
+                $gte: startDate, // Greater than or equal to start of day
+                $lte: endDate,   // Less than or equal to end of day
+            },
         })
-        //console.log("Recommended meditation:", result);
-        return result;
-
-    } catch (error) {
-        console.error("Error retrieving meditation:", error);
-        return { success: false, message: `Failed to retrieve meditation.` };
-    }
-};
-
-const updateMeditation = async (meditationId, newTitle, newContent) => {
-    try {
-        const doc = new Document({
-            pageContent: newContent,
-            metadata: { title: newTitle },
-        });
-        await vectorStore.addDocuments([doc], { ids: [meditationId] });
-
-        return { success: true, message: "Meditation updated successfully!" };
-    } catch (error) {
-        console.error("Error updating meditation:", error);
-        return { success: false, message: "Failed to update meditation." };
-    }
-};
-
-const deleteMeditation = async (id) => {
-    return await vectorStore.delete({ ids: [id] });
+        .select("-_id  emotionObjects symptomObjects  correlationObjects");
+        
+    return analysis;
 };
 
 
 export default {
-    // fetchAllTrackIds,
-    fetchTrackDataWithId,
-    // fetchTrackData,
     createMeditation,
     getAllMeditations,
-    getMeditationOnScroll,
+    getRecommendations,
+    loadData,
     getMeditationById,
-    updateMeditation,
     deleteMeditation,
-    getRecommendedMeditation
 }

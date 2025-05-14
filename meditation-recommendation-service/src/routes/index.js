@@ -3,6 +3,6 @@ import meditationRoutes from './meditationRoutes.js';
 
 const router = express.Router();
 
-router.use('/meditations', meditationRoutes);
+router.use('/', meditationRoutes);
 
 export default router;
