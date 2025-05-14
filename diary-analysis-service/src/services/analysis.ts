@@ -2,9 +2,143 @@ import { ChatPromptTemplate } from "@langchain/core/prompts"
 import { llmModel } from "../lib/modelConfiguration"
 import { z, ZodVoid } from "zod";
 import sharp from 'sharp';
-import { DiaryAnalysisDto, Correlation, Symptom, Emotion } from '../types/diary';
-import DiaryAnalysisResult from "../models/DiaryAnalysisResult"
+import { uploadToS3 } from '../lib/awsConfiguration';
+import Analysis from '../models/Analysis';
 
+// Get diary analysis by diaryId
+export const getDiaryAnalysis = async (userId: string, date: string) => {
+    // Parse the date and create a range for the whole day
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Start of the day
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999); // End of the day
+
+    const diaries = await Analysis.findOne({
+        userId: userId,
+        createdAt: {
+            $gte: startDate, // Greater than or equal to start of day
+            $lte: endDate,   // Less than or equal to end of day
+        },
+    });
+    return diaries;
+};
+
+const combinedAnalyzePrompt = ChatPromptTemplate.fromTemplate(
+    "You are a helpful and enthusiastic psychological therapist. Carefully analyze the following personal diary entry.\n\n\
+    **Step 1: Emotion Analysis**\n\
+    - Identify specific factors influencing the user’s mood (e.g., events, people, environments, activities, internal thoughts or beliefs).\n\
+    - Differentiate between short-term influences (temporary factors) and long-term patterns (recurring themes like ongoing stress or frequent self-doubt).\n\
+    - Reflect on how these patterns emotionally resonate with the user.\n\
+    - Rate the mood on a scale from 1 to 5, where 1 is extremely negative and 5 is extremely positive.\n\
+    - Classify the mood into categories (e.g., happy, sad, anxious, calm, etc.).\n\
+    - Provide a gentle comparison to previous entries and offer words of encouragement or support.\n\n\
+    **Step 2: Correlation Analysis**\n\
+    - Identify patterns between mood and external/internal influences.\n\
+    - Label these influences as either short-term or long-term.\n\
+    - Provide compassionate insights on these correlations to help the user understand their emotional trends.\n\
+    - Suggest manageable strategies to cope with or enhance certain emotional triggers.\n\n\
+    **Step 3: Mental Health Screening**\n\
+    - Detect potential signs of mental health conditions such as anxiety, depression, or stress.\n\
+    - Assess severity levels (mild, moderate, or high) based on recurring themes.\n\
+    - Use supportive and empathetic language to express concerns.\n\
+    - Offer self-care strategies and, if necessary, encourage professional support in a non-alarming manner.\n\n\
+    **User Diary:**\n\
+    {input}"
+);
+
+const combinedAnalyzeSchema = z.object({
+    emotion: z.object({
+        emotionLevel: z.string().describe("Rate the mood from 1 to 5 and classify the mood into categories."),
+        category: z.array(z.string().describe("List of mood categories.")),
+        summary: z.string().describe("Comparison to previous entries, with encouragement and emotional support."),
+    }),
+    correlations: z.array(
+        z.object({
+            name: z.string().describe("Factor influencing the user's mood, labeled as short-term or long-term."),
+            description: z.string().describe("Compassionate insights on this correlation."),
+        })
+    ),
+    symptoms: z.array(
+        z.object({
+            name: z.string().describe("Potential symptom name."),
+            risk: z.string().describe("Severity level (mild, moderate, or high)."),
+            description: z.string().describe("Explanation of the symptom's cause."),
+            suggestions: z.string().describe("Supportive healthcare strategies."),
+        })
+    ),
+});
+
+const combinedAnalyzeOutput = llmModel.withStructuredOutput(combinedAnalyzeSchema, {
+    name: "combined_analysis",
+});
+
+const combinedChain = combinedAnalyzePrompt.pipe(combinedAnalyzeOutput);
+
+export const analyzeDiaryEntry = async (
+    userId: string,
+    diaryId: string,
+    input: string,
+    uploadFile?: Express.Multer.File
+) => {
+    try {
+        const analysisResult = await combinedChain.invoke({ input });
+
+        let imageUrl: string | undefined;
+        if (uploadFile) {
+            const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+            const imageName = `${uniqueSuffix}-${uploadFile.originalname}`;
+            const fileBuffer = await sharp(uploadFile.buffer).jpeg({ quality: 80 }).toBuffer();
+            imageUrl = await uploadToS3(fileBuffer, imageName, uploadFile.mimetype);
+        }
+
+        const newDiary = new Analysis({
+            userId: userId,
+            diaryId: diaryId,
+            emotionObjects: [{
+                emotionLevel: analysisResult.emotion.emotionLevel,
+                emotionCategory: analysisResult.emotion.category,
+                emotionSummary: analysisResult.emotion.summary,
+            }],
+            correlationObjects: analysisResult.correlations.map(correlation => ({
+                name: correlation.name,
+                description: correlation.description,
+            })),
+            symptomObjects: analysisResult.symptoms.map(symptom => ({
+                name: symptom.name,
+                risk: symptom.risk,
+                description: symptom.description,
+                suggestions: symptom.suggestions,
+            })),
+        });
+
+        await newDiary.save();
+
+        return {
+            success: true,
+            message: "Diary analysis completed successfully",
+            result: analysisResult,
+        };
+    } catch (error) {
+        throw new Error(error.message || "Error processing diary analysis");
+    }
+};
+
+// Delete diary analysis by analysisId
+export const deleteDiaryAnalysis = async (diaryId: string) => {
+    const analysis = await Analysis.find({ diaryId: diaryId });
+    if (!analysis || analysis.length === 0) {
+        throw new Error("No analysis found for the given diaryId");
+    }
+    const analysisIds = analysis.map((item) => item._id);
+    return await Promise.all(analysisIds.map(async (analysisId) => {
+        const analysis = await Analysis.findById(analysisId);
+        if (analysis) {
+            await analysis.deleteOne();
+        }
+    }));
+};
+
+// Old prompts and schemas
 // const emotionAnalyzePrompt = ChatPromptTemplate.fromTemplate(
 //     "You are a helpful and enthusiastic psychological therapist. You can analyze the following personal diary entry carefully.\
 //     Step 1: Identify specific factors mentioned in the diary entry such as events (e.g., “big presentation at work”), people (e.g., “spent time with family”), environments (e.g., “felt calm at the park”), activities (e.g., “went for a run”), and internal thoughts or beliefs (e.g., “felt I wasn’t good enough”) that may be influencing the user’s mood.\
@@ -84,111 +218,3 @@ import DiaryAnalysisResult from "../models/DiaryAnalysisResult"
 // });
 
 // const mentalHealthChain = mentalHealthAnalyzePrompt.pipe(mentalHealthAnalyzeOutput);
-
-const combinedAnalyzePrompt = ChatPromptTemplate.fromTemplate(
-    "You are a helpful and enthusiastic psychological therapist. Carefully analyze the following personal diary entry.\n\n\
-    **Step 1: Emotion Analysis**\n\
-    - Identify specific factors influencing the user’s mood (e.g., events, people, environments, activities, internal thoughts or beliefs).\n\
-    - Differentiate between short-term influences (temporary factors) and long-term patterns (recurring themes like ongoing stress or frequent self-doubt).\n\
-    - Reflect on how these patterns emotionally resonate with the user.\n\
-    - Rate the mood on a scale from 1 to 5, where 1 is extremely negative and 5 is extremely positive.\n\
-    - Classify the mood into categories (e.g., happy, sad, anxious, calm, etc.).\n\
-    - Provide a gentle comparison to previous entries and offer words of encouragement or support.\n\n\
-    **Step 2: Correlation Analysis**\n\
-    - Identify patterns between mood and external/internal influences.\n\
-    - Label these influences as either short-term or long-term.\n\
-    - Provide compassionate insights on these correlations to help the user understand their emotional trends.\n\
-    - Suggest manageable strategies to cope with or enhance certain emotional triggers.\n\n\
-    **Step 3: Mental Health Screening**\n\
-    - Detect potential signs of mental health conditions such as anxiety, depression, or stress.\n\
-    - Assess severity levels (mild, moderate, or high) based on recurring themes.\n\
-    - Use supportive and empathetic language to express concerns.\n\
-    - Offer self-care strategies and, if necessary, encourage professional support in a non-alarming manner.\n\n\
-    **User Diary:**\n\
-    {input}"
-);
-
-const combinedAnalyzeSchema = z.object({
-    emotion: z.object({
-        emotionLevel: z.string().describe("Rate the mood from 1 to 5 and classify the mood into categories."),
-        category: z.array(z.string().describe("List of mood categories.")),
-        summary: z.string().describe("Comparison to previous entries, with encouragement and emotional support."),
-    }),
-    correlations: z.array(
-        z.object({
-            name: z.string().describe("Factor influencing the user's mood, labeled as short-term or long-term."),
-            description: z.string().describe("Compassionate insights on this correlation."),
-        })
-    ),
-    symptoms: z.array(
-        z.object({
-            name: z.string().describe("Potential symptom name."),
-            risk: z.string().describe("Severity level (mild, moderate, or high)."),
-            description: z.string().describe("Explanation of the symptom's cause."),
-            suggestions: z.string().describe("Supportive healthcare strategies."),
-        })
-    ),
-});
-
-const combinedAnalyzeOutput = llmModel.withStructuredOutput(combinedAnalyzeSchema, {
-    name: "combined_analysis",
-});
-
-const combinedChain = combinedAnalyzePrompt.pipe(combinedAnalyzeOutput);
-
-export const analyzeDiaryEntry = async (
-    userId: string,
-    diaryId: string,
-    input: string,
-) => {
-    try {
-        const analysisResult: DiaryAnalysisDto = await combinedChain.invoke({ input }) as DiaryAnalysisDto;
-
-        let diaryAnalysisResultEntity = await DiaryAnalysisResult.create({
-            senderId: userId,
-            diaryId: diaryId
-        })
-
-        if (analysisResult.emotion) {
-            diaryAnalysisResultEntity.emotion = analysisResult.emotion;
-        }
-
-        if (analysisResult.correlations) {
-            diaryAnalysisResultEntity.correlations = analysisResult.correlations.map((correlation: Correlation) => ({
-                name: correlation.name,
-                description: correlation.description,
-            }))
-        }
-
-        if (analysisResult.symptoms) {
-            diaryAnalysisResultEntity.symptoms = analysisResult.symptoms.map((symptom: Symptom) => ({
-                name: symptom.name,
-                risk: symptom.risk,
-                description: symptom.description,
-                suggestions: symptom.suggestions,
-            }))
-        }
-        console.log(diaryAnalysisResultEntity)
-
-        diaryAnalysisResultEntity = await diaryAnalysisResultEntity.save()
-        return diaryAnalysisResultEntity
-    } catch (error) {
-        throw new Error(error.message || "Error processing diary analysis");
-    }
-};
-
-// Get diary analysis by diaryId
-export const getDiaryAnalysis = async (diaryId: string) => {
-    return DiaryAnalysisResult.findOne({ diaryId });
-};
-
-// Update diary analysis by diaryId
-export const updateDiaryAnalysis = async (diaryId: string, updatedData: any) => {
-    return DiaryAnalysisResult.findOneAndUpdate({ diaryId }, updatedData, { new: true });
-};
-
-// Delete diary analysis by diaryId
-export const deleteDiaryAnalysis = async (diaryId: string) => {
-    return DiaryAnalysisResult.findOneAndDelete({ diaryId });
-};
-
