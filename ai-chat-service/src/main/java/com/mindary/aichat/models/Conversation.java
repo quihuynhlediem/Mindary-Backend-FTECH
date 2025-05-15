@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 @Document(collection = "conversations")
 public class Conversation {
+
     @Id
     private String id;
     private UUID userId;
@@ -22,4 +23,10 @@ public class Conversation {
     private FollowUpType followUpType;
     private LocalDateTime followUpDue;
     private boolean isFollowedUp;
+
+    // Follow-up enhancements
+    private int followUpCount; // How many follow-ups have been sent
+    private String followUpReason; // e.g., "test", "bad day", etc.
+    private String followUpPrompt; // What to say in the follow-up
+    private boolean followUpActive; // Is a follow-up scheduled?
 }

@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mindary.aichat.dto.ChatRequest;
-import com.mindary.aichat.dto.amqp.DiaryAnalysisDto;
 import com.mindary.aichat.models.ChatMessage;
 import com.mindary.aichat.models.Conversation;
 import com.mindary.aichat.repositories.ChatMessageRepository;
 import com.mindary.aichat.services.ConversationService;
 import com.mindary.aichat.services.GeminiService;
-import com.mindary.aichat.services.UserDiaryInsightService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,20 +36,13 @@ public class ChatController {
     private final GeminiService geminiService;
     private final ConversationService conversationService;
     private final ChatMessageRepository chatMessageRepository;
-    private final UserDiaryInsightService userDiaryInsightService;
-    // TODO: Inject UserContextService
-    // private final UserContextService userContextService;
     private static final int CHAT_HISTORY_LIMIT = 7; // Limit to last 7 messages for development v1
 
     @PostMapping("/conversations")
     public ResponseEntity<Map<String, Object>> createConversation(@Valid @RequestBody ChatRequest chatRequest) {
-        // Generate AI response first
-        String aiResponse = geminiService.generateResponse(chatRequest.getMessage(), "", null);
-
         Conversation conversation = conversationService.createConversation(
                 chatRequest.getUserId(),
-                chatRequest.getMessage(),
-                aiResponse
+                chatRequest.getMessage()
         );
 
         List<ChatMessage> messages = conversationService.getConversationHistory(conversation.getId());
@@ -79,25 +71,11 @@ public class ChatController {
                 .limit(CHAT_HISTORY_LIMIT)
                 .toList();
 
-        // --- Fetch and Format Diary Insight ---
-        String diaryInsightString = null;
-        try {
-            DiaryAnalysisDto latestInsight = userDiaryInsightService.getLatestInsight(chatRequest.getUserId());
-            if (latestInsight != null) {
-                diaryInsightString = userDiaryInsightService.formatInsightForPrompt(latestInsight);
-                log.info("Retrieved diary insight for user: {}", chatRequest.getUserId());
-            } else {
-                log.info("No diary insight found for user: {}", chatRequest.getUserId());
-            }
-        } catch (Exception e) {
-            log.error("Error retrieving diary insight for user {}: {}", chatRequest.getUserId(), e.getMessage());
-        }
-        // --- End Fetch Diary Insight ---
-
         String response = geminiService.generateResponse(
                 chatRequest.getMessage(),
                 conversationId,
-                diaryInsightString // Pass the formatted insight string (can be null)
+                null, // Pass the formatted insight string (can be null)
+                chatRequest.getMode() // Pass the mode from the request
         );
 
         // Let ConversationService handle the message saving and analysis
@@ -105,7 +83,8 @@ public class ChatController {
                 conversationId,
                 chatRequest.getUserId(),
                 chatRequest.getMessage(),
-                response
+                response,
+                chatRequest.getMode() // Pass the mode to the service
         ));
     }
 
@@ -155,5 +134,16 @@ public class ChatController {
             @PathVariable String messageId) {
         conversationService.deleteMessage(conversationId, messageId);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/conversations/{conversationId}/title")
+    public ResponseEntity<Conversation> updateConversationTitle(
+            @PathVariable String conversationId,
+            @RequestBody Map<String, String> request) {
+        String newTitle = request.get("title");
+        if (newTitle == null || newTitle.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(conversationService.updateConversationTitle(conversationId, newTitle));
     }
 }
