@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,13 +40,9 @@ public class ChatController {
 
     @PostMapping("/conversations")
     public ResponseEntity<Map<String, Object>> createConversation(@Valid @RequestBody ChatRequest chatRequest) {
-        // Generate AI response first
-        String aiResponse = geminiService.generateResponse(chatRequest.getMessage(), "", null);
-
         Conversation conversation = conversationService.createConversation(
                 chatRequest.getUserId(),
-                chatRequest.getMessage(),
-                aiResponse
+                chatRequest.getMessage()
         );
 
         List<ChatMessage> messages = conversationService.getConversationHistory(conversation.getId());
@@ -76,8 +73,9 @@ public class ChatController {
 
         String response = geminiService.generateResponse(
                 chatRequest.getMessage(),
-                conversationId, // Pass conversationId instead of history string
-                null // diary insights will be added later
+                conversationId,
+                null, // Pass the formatted insight string (can be null)
+                chatRequest.getMode() // Pass the mode from the request
         );
 
         // Let ConversationService handle the message saving and analysis
@@ -85,7 +83,8 @@ public class ChatController {
                 conversationId,
                 chatRequest.getUserId(),
                 chatRequest.getMessage(),
-                response
+                response,
+                chatRequest.getMode() // Pass the mode to the service
         ));
     }
 
@@ -135,5 +134,16 @@ public class ChatController {
             @PathVariable String messageId) {
         conversationService.deleteMessage(conversationId, messageId);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/conversations/{conversationId}/title")
+    public ResponseEntity<Conversation> updateConversationTitle(
+            @PathVariable String conversationId,
+            @RequestBody Map<String, String> request) {
+        String newTitle = request.get("title");
+        if (newTitle == null || newTitle.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(conversationService.updateConversationTitle(conversationId, newTitle));
     }
 }
