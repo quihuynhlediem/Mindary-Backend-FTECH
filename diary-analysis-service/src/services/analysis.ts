@@ -15,7 +15,7 @@ export const getDiaryAnalysis = async (userId: string, date: string) => {
 
     const diaries = await Analysis.findOne({
         userId: userId,
-        createdAt: {
+        createdAt: {    
             $gte: startDate, // Greater than or equal to start of day
             $lte: endDate,   // Less than or equal to end of day
         },

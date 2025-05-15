@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="Merge jacky branch to qui branch">
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/controllers/diaryAnalysisController.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/models/DiaryAnalysisResult.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/analysis.ts" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/src/router/analysis.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/diaryAnalysis.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/src/router/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/services/diaryAnalysisService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,12 +35,12 @@
     &quot;assignee&quot;: &quot;BaoHo205&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/quihuynhlediem/Mindary-Backend-FTECH&quot;,
-    &quot;accountId&quot;: &quot;dd17aa49-7de7-47e8-9c81-09892972dfc6&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/quihuynhlediem/Mindary-Backend-FTECH.git",
+    "accountId": "f1bc7f4f-dd88-4bab-a518-09d74c39e8d5"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -73,7 +64,7 @@
     "Spring Boot.ApiGatewayApplication.executor": "Run",
     "Spring Boot.DiaryServiceApplication.executor": "Run",
     "Spring Boot.IdentityApplication.executor": "Run",
-    "git-widget-placeholder": "qui/diary-analysis",
+    "git-widget-placeholder": "bao/meditation-recommendation-service",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/ADMIN/Documents/project/mindary_v2/Mindary-Backend-FTECH/user-identity-service",
@@ -97,7 +88,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.ApiGatewayApplication">
+  <component name="RunManager" selected="Spring Boot.IdentityApplication">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="diary-entry" />
       <method v="2">
@@ -151,8 +142,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
       </set>
     </attachedChunks>
   </component>
@@ -169,6 +160,7 @@
       <workItem from="1746423516748" duration="75000" />
       <workItem from="1746423598840" duration="384000" />
       <workItem from="1746631051900" duration="794000" />
+      <workItem from="1747297820339" duration="829000" />
     </task>
     <task id="LOCAL-00001" summary="Merge jacky branch to qui branch">
       <option name="closed" value="true" />
@@ -187,15 +179,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge jacky branch to qui branch" />
     <option name="LAST_COMMIT_MESSAGE" value="Merge jacky branch to qui branch" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/meditation-recommendation-service/src/database/models/MeditationModel.js</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
