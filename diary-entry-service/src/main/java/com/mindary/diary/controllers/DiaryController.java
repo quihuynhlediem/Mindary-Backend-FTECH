@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -59,6 +62,17 @@ public class DiaryController {
         return foundDiaries.map(diaryMapper::mapTo);
     }
 
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @GetMapping(path = "/user/{userId}")
+    public Page<LocalDateTime> getDiaryCreatedAtByUserId(
+            @PathVariable("userId") UUID userId,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        log.info("Getting diaries created date by userId: {}", userId);
+        Page<DiaryEntity> foundDiaries = diaryService.findByUserId(userId, pageable);
+        return foundDiaries.map(DiaryEntity::getCreatedAt);
+    }
+
     @Operation(summary = "Get diary by ID", description = "Retrieve a specific diary by its ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of diary", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DiaryDto.class))),
@@ -67,7 +81,7 @@ public class DiaryController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(schema = @Schema())})
     })
     @PreAuthorize("#userId.toString() == authentication.name")
-    @GetMapping(path = "{diaryId}/user/{userId}")
+    @GetMapping(path = "{diaryId}/user/{userId}/created-dates")
     public ResponseEntity<DiaryDto> getDiaryById(
             @PathVariable("userId") UUID userId,
             @PathVariable("diaryId") UUID diaryId
