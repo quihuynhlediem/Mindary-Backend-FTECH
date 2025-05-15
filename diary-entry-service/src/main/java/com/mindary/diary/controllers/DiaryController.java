@@ -3,13 +3,13 @@ package com.mindary.diary.controllers;
 import com.mindary.diary.dto.AnalysisResultDto;
 import com.mindary.diary.dto.DiaryDto;
 import com.mindary.diary.dto.DiaryImageDto;
+import com.mindary.diary.dto.IsAnalysisDto;
 import com.mindary.diary.mappers.Mapper;
 import com.mindary.diary.models.DecryptAESKeyRequest;
 import com.mindary.diary.models.DiaryEntity;
 import com.mindary.diary.models.DiaryImage;
 import com.mindary.diary.services.DiaryImageService;
 import com.mindary.diary.services.DiaryService;
-import com.mindary.diary.services.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +41,6 @@ public class DiaryController {
     private final Mapper<DiaryEntity, DiaryDto> diaryMapper;
     private final Mapper<DiaryImage, DiaryImageDto> diaryImageMapper;
     private final DiaryImageService diaryImageService;
-    private final RabbitMQSender rabbitMQSender;
 
     @Operation(summary = "Get diaries by user ID", description = "Retrieve a paginated list of diaries for a specific user.")
     @ApiResponses(value = {
@@ -99,6 +98,24 @@ public class DiaryController {
             log.info("Diary found: {}", foundDiary.get().toString());
             DiaryDto diaryDto = diaryMapper.mapTo(foundDiary.get());
             return new ResponseEntity<>(diaryDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @GetMapping(path = "/user/{userId}/{date}/is-analyzed")
+    public ResponseEntity<IsAnalysisDto> checkIsDiaryAnalyzed(
+            @PathVariable("userId") UUID userId,
+            @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    ) {
+        Optional<DiaryEntity> foundDiary = diaryService.findByUserIdAndDate(userId, currentDate);
+
+        if (foundDiary.isPresent()) {
+            log.info("Diary found: {}", foundDiary.get().toString());
+            IsAnalysisDto isAnalysisDto = IsAnalysisDto.builder()
+                    .analyzed(foundDiary.get().isAnalyzed())
+                    .build();
+            return new ResponseEntity<>(isAnalysisDto, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

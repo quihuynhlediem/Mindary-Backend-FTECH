@@ -60,10 +60,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public UserDetails registerUser(String userName, String password, String email, String publicKey, String salt, String encryptedPrivateKey, String privateKeyIv, User.UserRole userRole) {
+    public UserDetails registerUser(String userName, String firstName, String lastName, String password, String email, String publicKey, String salt, String encryptedPrivateKey, String privateKeyIv, User.UserRole userRole) {
         if (userRole.equals(User.UserRole.CUSTOMER)) {
             CustomerEntity customer = CustomerEntity.builder()
                     .username(userName)
+                    .firstName(firstName)
+                    .lastName(lastName)
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .role(userRole)

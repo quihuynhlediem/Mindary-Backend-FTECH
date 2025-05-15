@@ -5,13 +5,11 @@ import com.mindary.diary.models.DiaryEntity;
 import com.mindary.diary.repositories.DiaryRepository;
 import com.mindary.diary.services.CustomerService;
 import com.mindary.diary.services.DiaryService;
-import com.mindary.diary.services.RabbitMQSender;
+//import com.mindary.diary.services.RabbitMQSender;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +42,8 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryRepository diaryRepository;
     private final CustomerService customerService;
     private final Map<UUID, CompletableFuture<AnalysisResultDto>> pendingAnalysis = new ConcurrentHashMap<>();
-    private final RabbitTemplate rabbitTemplate;
-    private final RabbitMQSender rabbitMQSender;
+//    private final RabbitTemplate rabbitTemplate;
+//    private final RabbitMQSender rabbitMQSender;
 
     @Value(value = "${rabbitmq.queue.analysis_result.name:application.properties}")
     private String analysisResultQueue;
@@ -87,7 +85,7 @@ public class DiaryServiceImpl implements DiaryService {
     public AnalysisResultDto analyze (DiaryEntity savedDiary) {
         CompletableFuture<AnalysisResultDto> future = new CompletableFuture<>();
         pendingAnalysis.put(savedDiary.getId(), future);
-        rabbitMQSender.sendDiary(savedDiary);
+//        rabbitMQSender.sendDiary(savedDiary);
 
         return waitForAnalysisResult(savedDiary.getId());
     }
@@ -103,24 +101,24 @@ public class DiaryServiceImpl implements DiaryService {
         }
     }
 
-    @RabbitListener(queues = "${rabbitmq.queue.analysis_result.name:application.properties}")
-    public void receiveAnalysisResult(AnalysisResultDto analysisResult) {
-        if (analysisResult == null) {
-            log.warn("Received null analysis result.");
-            return;
-        }
-
-        log.info(analysisResult.toString());
-        log.info(analysisResult.getDiaryId().toString());
-
-        CompletableFuture<AnalysisResultDto> future = pendingAnalysis.get(analysisResult.getDiaryId());
-
-        if (future != null) {
-            future.complete(analysisResult);
-        } else {
-            log.warn("No pending analysis found for diary ID: {}", analysisResult.getDiaryId());
-        }
-    }
+//    @RabbitListener(queues = "${rabbitmq.queue.analysis_result.name:application.properties}")
+//    public void receiveAnalysisResult(AnalysisResultDto analysisResult) {
+//        if (analysisResult == null) {
+//            log.warn("Received null analysis result.");
+//            return;
+//        }
+//
+//        log.info(analysisResult.toString());
+//        log.info(analysisResult.getDiaryId().toString());
+//
+//        CompletableFuture<AnalysisResultDto> future = pendingAnalysis.get(analysisResult.getDiaryId());
+//
+//        if (future != null) {
+//            future.complete(analysisResult);
+//        } else {
+//            log.warn("No pending analysis found for diary ID: {}", analysisResult.getDiaryId());
+//        }
+//    }
 
     @Override
     public DiaryEntity save(DiaryEntity diary) {

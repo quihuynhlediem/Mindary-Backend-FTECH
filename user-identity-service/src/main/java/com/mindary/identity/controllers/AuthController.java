@@ -49,6 +49,7 @@ public class AuthController {
 
         UUID userId = extractUserId(userDetails);
         String salt = extractSalt(userDetails);
+        String username = extractUsername(userDetails);
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
@@ -58,6 +59,7 @@ public class AuthController {
                 .refreshToken(refreshToken)
                 .userId(userId)
                 .salt(salt)
+                .username(username)
                 .build();
 
         return ResponseEntity.ok(authResponse);
@@ -73,6 +75,8 @@ public class AuthController {
     public ResponseEntity<AuthResponse> signUp(@RequestBody SignUpRequest signUpRequest) {
         UserDetails userDetails = authenticationService.registerUser(
                 signUpRequest.getUsername(),
+                signUpRequest.getFirstName(),
+                signUpRequest.getLastName(),
                 signUpRequest.getPassword(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPublicKey(),
@@ -143,5 +147,9 @@ public class AuthController {
 
     private String extractSalt(UserDetails userDetails) {
         return ((SystemUserDetails) userDetails).getSalt();
+    }
+
+    private String extractUsername(UserDetails userDetails) {
+        return ((SystemUserDetails) userDetails).getUsername();
     }
 }
