@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="Merge jacky branch to qui branch">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/config/GatewayConfig.java" afterDir="false" />
-    </list>
+    <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="Merge jacky branch to qui branch" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -163,7 +159,7 @@
       <workItem from="1746631051900" duration="794000" />
       <workItem from="1747297820339" duration="829000" />
       <workItem from="1747372275491" duration="430000" />
-      <workItem from="1747372719327" duration="3405000" />
+      <workItem from="1747372719327" duration="4008000" />
     </task>
     <task id="LOCAL-00001" summary="Merge jacky branch to qui branch">
       <option name="closed" value="true" />
