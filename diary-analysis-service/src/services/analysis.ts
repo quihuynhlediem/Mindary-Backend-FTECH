@@ -23,6 +23,86 @@ export const getDiaryAnalysis = async (userId: string, date: string) => {
     return diaries;
 };
 
+export const getEmotionLevelByPeriod = async (filter: string, userId: string) => {
+    const date = new Date();
+    let startDate: Date;
+    let endDate: Date;
+
+    switch (filter) {
+        case "year":
+            startDate = new Date(date);
+            startDate.setDate(startDate.getDate() - 365);
+            startDate.setHours(0, 0, 0, 0); // Start of the day
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999); // End of the day
+            break;
+        case "week":
+            startDate = new Date(date);
+            startDate.setDate(startDate.getDate() - 7);
+            startDate.setHours(0, 0, 0, 0); // Start of the week
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999); // End of the week
+            break;
+        case "month":
+            startDate = new Date(date);
+            startDate.setMonth(startDate.getMonth() - 1);
+            startDate.setHours(0, 0, 0, 0); // Start of the month
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999); // End of the month
+            break;
+        default:
+            throw new Error("Invalid filter");
+    }
+
+    const analyses = await Analysis.find({
+        createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+        },
+        userId: userId,
+    });
+
+    const emotionLevelProp = [0, 0, 0, 0, 0]; // Initialize an array to count each emotion level
+    analyses.forEach((analysis) => {
+        const emotionLevel: number = Number.parseInt(analysis?.emotionObjects[0]?.emotionLevel) || 3;
+        if (emotionLevel >= 1 && emotionLevel <= 5) {
+            console.log("Emotion Level:", emotionLevel);
+            emotionLevelProp[emotionLevel - 1] += 1;
+        }
+    });
+    return emotionLevelProp;
+}
+
+export const getEmotionLevelFromAnalysis = async (userId: string, date: string) => {
+    // const dateObj = new Date(date);
+    let emotionLevels: number[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+        let endDate = new Date(date);
+        endDate.setDate(endDate.getDate() - i);
+        // console.log("endDate", endDate);
+        endDate.setHours(23, 59, 59, 999); // End of the day
+        const startDate = new Date(endDate);
+        startDate.setHours(0, 0, 0, 0); // Start of the day
+        // const formattedDate = endDate.toISOString().split("T")[0]; // Format date to YYYY-MM-DD
+
+        const diary = await Analysis.findOne({
+            userId: userId,
+            createdAt: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+            },
+        });
+        if (!diary) {
+            emotionLevels.push(0);
+        } else {
+            const emotionLevel = diary.emotionObjects[0].emotionLevel;
+            emotionLevels.push(Number(emotionLevel));
+        }
+    }
+    return { emotionLevels };
+}
+
 const combinedAnalyzePrompt = ChatPromptTemplate.fromTemplate(
     "You are a helpful and enthusiastic psychological therapist. Carefully analyze the following personal diary entry.\n\n\
     **Step 1: Emotion Analysis**\n\
@@ -90,6 +170,8 @@ export const analyzeDiaryEntry = async (
             const fileBuffer = await sharp(uploadFile.buffer).jpeg({ quality: 80 }).toBuffer();
             imageUrl = await uploadToS3(fileBuffer, imageName, uploadFile.mimetype);
         }
+
+        await Analysis.deleteMany({ userId: userId, diaryId: diaryId });
 
         const newDiary = new Analysis({
             userId: userId,
