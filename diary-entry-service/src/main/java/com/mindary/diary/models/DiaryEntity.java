@@ -42,6 +42,9 @@ public class DiaryEntity {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "analyzed")
+    private boolean analyzed = false;
+
     @OneToMany(
             mappedBy = "diary",
             cascade = {CascadeType.ALL},

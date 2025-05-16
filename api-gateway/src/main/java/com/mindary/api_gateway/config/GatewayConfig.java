@@ -25,7 +25,7 @@ public class GatewayConfig {
                         .uri("http://localhost:8083")
                 )
                 .route("meditation-recommendation-service-route", r -> r
-                        .path("api/v1/meditations")
+                        .path("/api/v1/meditations/**")
                         .uri("http://localhost:8084")
                 )
                 .route("diary-analysis-service", r -> r

@@ -4,18 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="Merge jacky branch to qui branch">
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/controllers/diaryAnalysisController.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/models/DiaryAnalysisResult.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/analysis.ts" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/src/router/analysis.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/diaryAnalysis.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/src/router/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/src/services/diaryAnalysisService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-analysis-service/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/diary-analysis-service/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+    <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="fix api gateway error for meditation recommendation service, add first name and last name of user in db, remove rabbitmq from diary entry service">
+      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/IsAnalysisDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/config/GatewayConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/RabbitMQConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/RabbitMQConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/controllers/DiaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/controllers/DiaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DiaryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DiaryEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQSender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQReceiverImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQReceiverImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQSenderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQSenderImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/CustomerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/CustomerDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/request/SignUpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/request/SignUpRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/response/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/response/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/models/CustomerEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/models/CustomerEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/security/SystemUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/security/SystemUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/AuthenticationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/AuthenticationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/CustomerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/CustomerServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +35,6 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -33,7 +42,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="jacky/ai-chatbot-service" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -46,8 +55,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/quihuynhlediem/Mindary-Backend-FTECH&quot;,
-    &quot;accountId&quot;: &quot;dd17aa49-7de7-47e8-9c81-09892972dfc6&quot;
+    &quot;url&quot;: &quot;https://github.com/quihuynhlediem/Mindary-Backend-FTECH.git&quot;,
+    &quot;accountId&quot;: &quot;e4b13429-6f6f-41c9-bc8c-7953bcd39613&quot;
   }
 }</component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -62,32 +71,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "Spring Boot.AIChatApplication.executor": "Run",
-    "Spring Boot.ApiGatewayApplication.executor": "Run",
-    "Spring Boot.DiaryServiceApplication.executor": "Run",
-    "Spring Boot.IdentityApplication.executor": "Run",
-    "git-widget-placeholder": "qui/diary-analysis",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/ADMIN/Documents/project/mindary_v2/Mindary-Backend-FTECH/user-identity-service",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "run.configurations.included.in.services": "true",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.api-gateway.executor&quot;: &quot;Run&quot;,
+    &quot;Application.diary-entry-ervice.executor&quot;: &quot;Run&quot;,
+    &quot;Application.user-identity-service.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ApiGatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ADMIN/Documents/project/mindary_v2/Mindary-Backend-FTECH/user-identity-service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.30229884&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.27522936&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }]]></component>
   <component name="RunDashboard">
@@ -97,17 +105,33 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.ApiGatewayApplication">
-    <configuration default="true" type="JetRunConfigurationType">
+  <component name="RunManager" selected="Spring Boot.IdentityApplication">
+    <configuration name="api-gateway" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.mindary.api_gateway.ApiGatewayApplication" />
+      <module name="api-gateway" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="diary-entry-ervice" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.mindary.diary.DiaryServiceApplication" />
       <module name="diary-entry" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="diary-entry" />
-      <option name="filePath" />
-      <method v="2" />
+    <configuration name="user-identity-service" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.mindary.identity.IdentityApplication" />
+      <module name="identity" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="AIChatApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="ai-chat" />
@@ -142,6 +166,9 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Application.api-gateway" />
+      <item itemvalue="Application.diary-entry-ervice" />
+      <item itemvalue="Application.user-identity-service" />
       <item itemvalue="Spring Boot.AIChatApplication" />
       <item itemvalue="Spring Boot.ApiGatewayApplication" />
       <item itemvalue="Spring Boot.DiaryServiceApplication" />
@@ -151,8 +178,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
       </set>
     </attachedChunks>
   </component>
@@ -168,15 +195,9 @@
       <workItem from="1744779247741" duration="75000" />
       <workItem from="1746423516748" duration="75000" />
       <workItem from="1746423598840" duration="384000" />
-      <workItem from="1746631051900" duration="794000" />
-    </task>
-    <task id="LOCAL-00001" summary="Merge jacky branch to qui branch">
-      <option name="closed" value="true" />
-      <created>1746633197497</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1746633197497</updated>
+      <workItem from="1747064828715" duration="534000" />
+      <workItem from="1747149204334" duration="11484000" />
+      <workItem from="1747320829688" duration="4273000" />
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />
@@ -185,8 +206,8 @@
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Merge jacky branch to qui branch" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge jacky branch to qui branch" />
+    <MESSAGE value="fix api gateway error for meditation recommendation service, add first name and last name of user in db, remove rabbitmq from diary entry service" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix api gateway error for meditation recommendation service, add first name and last name of user in db, remove rabbitmq from diary entry service" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -197,5 +218,9 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
