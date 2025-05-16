@@ -63,7 +63,7 @@ public class DiaryController {
     }
 
     @PreAuthorize("#userId.toString() == authentication.name")
-    @GetMapping(path = "/user/{userId}")
+    @GetMapping(path = "/user/{userId}/created-at")
     public Page<LocalDateTime> getDiaryCreatedAtByUserId(
             @PathVariable("userId") UUID userId,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
