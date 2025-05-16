@@ -1,0 +1,51 @@
+import { Request, Response } from 'express';
+import { analyzeDiaryEntry, getDiaryAnalysis, deleteDiaryAnalysis } from "../services/analysis";
+
+export const getAnalysisResult = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.params.userId as string;
+        const date = req.params.date as string;
+        if (!date) {
+            res.status(400).json({ message: "Date is in the future" });
+            return;
+        }
+        const result = await getDiaryAnalysis(userId, date);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Internal server error" });
+    }
+
+}
+
+export const diaryAnalysisResult = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { userId, diaryId, content } = req.body;
+        if (!userId || !content || !diaryId) {
+            res.status(400).json({ message: "Missing required fields: userId, diary content, or diaryId." });
+            return;
+        }
+
+        const result = await analyzeDiaryEntry(userId, diaryId, content, req.file);
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Internal server error" });
+    }
+};
+
+export const deleteAnalysisResult = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { diaryId } = req.params;
+
+        if (!diaryId) {
+            res.status(400).json({ message: "Missing diaryId." });
+            return;
+        }
+
+        await deleteDiaryAnalysis(diaryId);
+
+        res.status(200).json({ message: "Analysis result deleted successfully." });
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Internal server error" });
+    }
+};

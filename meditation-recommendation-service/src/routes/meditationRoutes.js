@@ -43,15 +43,16 @@ const router = express.Router();
  *       500:
  *         description: Internal server error.
  */
-router.post('/create', MeditationController.createMeditation);
-router.post('/create/multiple', MeditationController.createMultipleMeditations);
 
-router.get('/get/all', MeditationController.getAllMeditations);
-router.get('/get/:id', MeditationController.getMeditationById);
-router.post('/get/recommended', MeditationController.getRecommendedMeditation);
 
-router.delete('/delete/:id', MeditationController.deleteMeditation);
+router.get('/meditations/get-all-meditation', MeditationController.getAllMeditations);
+router.get('/meditations/load-data', MeditationController.loadData);
+router.get('/meditations/:id', MeditationController.getMeditationById);
+router.post("/meditations/get-recommendations", MeditationController.getRecommendations);
+router.post('/meditations/create', MeditationController.createMeditation);
+// router.post('/meditation/recommended', MeditationController.getRecommendedMeditation);
+router.delete('/meditations/delete/:id', MeditationController.deleteMeditation);
 
-router.put('/update/:id', MeditationController.updateMeditation);
+//router.use('/', router);
 
 export default router;

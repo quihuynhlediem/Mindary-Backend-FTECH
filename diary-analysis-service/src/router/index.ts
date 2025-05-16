@@ -1,10 +1,14 @@
-import express from "express";
-import diary from "./diaryAnalysis";
-// import users from "./users";
+import express from 'express';
+
+import authentication from "./authentication";
+import user from "./user";
+import analysis from "./analysis";
 
 const router = express.Router();
 
 export default (): express.Router => {
-  diary(router);
+  authentication(router);
+  user(router);
+  analysis(router);
   return router;
 };

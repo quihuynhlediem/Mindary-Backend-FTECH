@@ -1,5 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc'
-import config from "./config.js";
+import config from "./config/config.js";
 import swaggerUi from "swagger-ui-express";
 
 const options = {
@@ -12,7 +12,7 @@ const options = {
         },
         servers: [
             {
-                url: `http:/localhost:${8084}`,
+                url: `http://localhost:${8084}`,
             }
         ]
     },

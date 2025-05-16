@@ -3,7 +3,6 @@ package com.mindary.identity.controllers;
 import com.mindary.identity.dto.CustomerDto;
 import com.mindary.identity.mappers.impl.CustomerMapper;
 import com.mindary.identity.models.CustomerEntity;
-import com.mindary.identity.models.User;
 import com.mindary.identity.services.AuthenticationService;
 import com.mindary.identity.services.CustomerService;
 import com.mindary.identity.services.EmailService;
@@ -78,7 +77,6 @@ public class CustomerController {
             @Validated @RequestBody CustomerDto hostDto
     ) {
         CustomerEntity customerEntity = customerMapper.mapFrom(hostDto);
-        customerEntity.setRole(User.UserRole.CUSTOMER);
         CustomerEntity savedCustomerEntity = customerService.save(customerEntity);
         return new ResponseEntity<>(customerMapper.mapTo(savedCustomerEntity), HttpStatus.CREATED);
     }
