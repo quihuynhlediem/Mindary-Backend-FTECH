@@ -12,7 +12,7 @@ const options = {
         },
         servers: [
             {
-                url: `http:/localhost:${8084}`,
+                url: `http://localhost:${8084}`,
             }
         ]
     },
