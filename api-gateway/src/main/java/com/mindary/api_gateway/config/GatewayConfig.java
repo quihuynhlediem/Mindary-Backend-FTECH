@@ -29,7 +29,7 @@ public class GatewayConfig {
                         .uri("http://localhost:8084")
                 )
                 .route("diary-analysis-service", r -> r
-                        .path("api/v1/diary")
+                        .path("/api/v1/diary/**")
                         .uri("http://localhost:8085")
                 )
                 .build();

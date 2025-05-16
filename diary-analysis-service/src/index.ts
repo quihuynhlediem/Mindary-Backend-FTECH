@@ -16,11 +16,12 @@ dotenv.config();
 const app: Application = express();
 const port = process.env.PORT || 8000;
 
-app.use(
-    cors({
-        credentials: true,
-    })
-);
+// app.use(
+//     cors({
+//         credentials: true,
+//         // origin: "http://localhost:3000"
+//     })
+// );
 
 app.use(compression());
 app.use(cookieParser());
