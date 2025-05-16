@@ -28,6 +28,10 @@ public class GatewayConfig {
                         .path("api/v1/meditations")
                         .uri("http://localhost:8084")
                 )
+                .route("diary-analysis-service", r -> r
+                        .path("api/v1/diary")
+                        .uri("http://localhost:8085")
+                )
                 .build();
     }
 }
