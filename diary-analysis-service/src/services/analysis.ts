@@ -23,6 +23,56 @@ export const getDiaryAnalysis = async (userId: string, date: string) => {
     return diaries;
 };
 
+export const getEmotionLevelByPeriod = async (filter: string, userId: string) => {
+    const date = new Date();
+    let startDate: Date;
+    let endDate: Date;
+
+    switch (filter) {
+        case "year":
+            startDate = new Date(date);
+            startDate.setDate(startDate.getDate() - 365);
+            startDate.setHours(0, 0, 0, 0); // Start of the day
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999); // End of the day
+            break;
+        case "week":
+            startDate = new Date(date);
+            startDate.setDate(startDate.getDate() - 7);
+            startDate.setHours(0, 0, 0, 0); // Start of the week
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999); // End of the week
+            break;
+        case "month":
+            startDate = new Date(date);
+            startDate.setMonth(startDate.getMonth() - 1);
+            startDate.setHours(0, 0, 0, 0); // Start of the month
+            endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999); // End of the month
+            break;
+        default:
+            throw new Error("Invalid filter");
+    }
+
+    const analyses = await Analysis.find({
+        createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+        },
+        userId: userId,
+    });
+
+    const emotionLevelProp = [0, 0, 0, 0, 0]; // Initialize an array to count each emotion level
+    analyses.forEach((analysis) => {
+        const emotionLevel: number = Number.parseInt(analysis?.emotionObjects[0]?.emotionLevel) || 3;
+        if (emotionLevel >= 1 && emotionLevel <= 5) {
+            console.log("Emotion Level:", emotionLevel);
+            emotionLevelProp[emotionLevel - 1] += 1;
+        }
+    });
+    return emotionLevelProp;
+}
+
 export const getEmotionLevelFromAnalysis = async (userId: string, date: string) => {
     // const dateObj = new Date(date);
     let emotionLevels: number[] = [];

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { analyzeDiaryEntry, getDiaryAnalysis, deleteDiaryAnalysis, getEmotionLevelFromAnalysis } from "../services/analysis";
+import { analyzeDiaryEntry, getDiaryAnalysis, deleteDiaryAnalysis, getEmotionLevelFromAnalysis, getEmotionLevelByPeriod } from "../services/analysis";
 
 export const getAnalysisResult = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -10,6 +10,22 @@ export const getAnalysisResult = async (req: Request, res: Response): Promise<vo
             return;
         }
         const result = await getDiaryAnalysis(userId, date);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Internal server error" });
+    }
+
+}
+
+export const getEmotionLevelResultByPeriod = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = req.query.userId as string;
+        const filter = req.query.filter as string;
+        if (!filter) {
+            res.status(400).json({ message: "Filter is required" });
+            return;
+        }
+        const result = await getEmotionLevelByPeriod(filter, userId);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message || "Internal server error" });
