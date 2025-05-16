@@ -5,27 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f83a4d19-d73d-4ee5-b25c-2924b70b5236" name="Changes" comment="fix api gateway error for meditation recommendation service, add first name and last name of user in db, remove rabbitmq from diary entry service">
-      <change afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/dto/IsAnalysisDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/config/GatewayConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/RabbitMQConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/config/RabbitMQConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/controllers/DiaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/controllers/DiaryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DiaryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/models/DiaryEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQSender.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/RabbitMQSender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/DiaryServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQReceiverImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQReceiverImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQSenderImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/diary-entry-service/src/main/java/com/mindary/diary/services/impl/RabbitMQSenderImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/controllers/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/CustomerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/CustomerDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/request/SignUpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/request/SignUpRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/response/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/dto/response/AuthResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/models/CustomerEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/models/CustomerEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/security/SystemUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/security/SystemUserDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/AuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/AuthenticationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/CustomerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-identity-service/src/main/java/com/mindary/identity/services/impl/CustomerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/ApiGatewayApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/ApiGatewayApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/controllers/CsrfController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/mindary/api_gateway/controllers/CsrfController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/meditation-recommendation-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/meditation-recommendation-service/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,12 +37,12 @@
     &quot;assignee&quot;: &quot;BaoHo205&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/quihuynhlediem/Mindary-Backend-FTECH.git&quot;,
-    &quot;accountId&quot;: &quot;e4b13429-6f6f-41c9-bc8c-7953bcd39613&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/quihuynhlediem/Mindary-Backend-FTECH.git",
+    "accountId": "f1bc7f4f-dd88-4bab-a518-09d74c39e8d5"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -71,46 +55,54 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.api-gateway.executor&quot;: &quot;Run&quot;,
-    &quot;Application.diary-entry-ervice.executor&quot;: &quot;Run&quot;,
-    &quot;Application.user-identity-service.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.ApiGatewayApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.DiaryServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.IdentityApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;bao/meditation-recommendation-service&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ADMIN/Documents/project/mindary_v2/Mindary-Backend-FTECH/user-identity-service&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.30229884&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.27522936&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ai-chat.executor": "Run",
+    "Application.api-gateway.executor": "Run",
+    "Application.diary-entry-ervice.executor": "Run",
+    "Application.user-identity-service.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.AIChatApplication.executor": "Run",
+    "Spring Boot.ApiGatewayApplication.executor": "Run",
+    "Spring Boot.DiaryServiceApplication.executor": "Run",
+    "Spring Boot.IdentityApplication.executor": "Run",
+    "git-widget-placeholder": "#1 on bao/meditation-recommendation-service",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ADMIN/Documents/project/mindary_v2/Mindary-Backend-FTECH",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Global Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.30229884",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
+    "settings.editor.splitter.proportion": "0.27522936",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
         <option value="Application" />
+        <option value="SpringBootApplicationConfigurationType" />
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.IdentityApplication">
+  <component name="RunManager" selected="Spring Boot.ApiGatewayApplication">
     <configuration name="api-gateway" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="23" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
       <option name="MAIN_CLASS_NAME" value="com.mindary.api_gateway.ApiGatewayApplication" />
       <module name="api-gateway" />
       <method v="2">
@@ -144,7 +136,6 @@
     </configuration>
     <configuration name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="23" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <module name="api-gateway" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.mindary.api_gateway.ApiGatewayApplication" />
       <method v="2">
@@ -180,8 +171,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
       </set>
     </attachedChunks>
   </component>
@@ -200,6 +191,7 @@
       <workItem from="1747064828715" duration="534000" />
       <workItem from="1747149204334" duration="11484000" />
       <workItem from="1747320829688" duration="4273000" />
+      <workItem from="1747407360204" duration="920000" />
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />
