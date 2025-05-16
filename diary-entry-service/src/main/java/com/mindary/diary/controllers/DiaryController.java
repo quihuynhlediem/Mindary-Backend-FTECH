@@ -3,13 +3,13 @@ package com.mindary.diary.controllers;
 import com.mindary.diary.dto.AnalysisResultDto;
 import com.mindary.diary.dto.DiaryDto;
 import com.mindary.diary.dto.DiaryImageDto;
+import com.mindary.diary.dto.IsAnalysisDto;
 import com.mindary.diary.mappers.Mapper;
 import com.mindary.diary.models.DecryptAESKeyRequest;
 import com.mindary.diary.models.DiaryEntity;
 import com.mindary.diary.models.DiaryImage;
 import com.mindary.diary.services.DiaryImageService;
 import com.mindary.diary.services.DiaryService;
-import com.mindary.diary.services.RabbitMQSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -41,7 +44,6 @@ public class DiaryController {
     private final Mapper<DiaryEntity, DiaryDto> diaryMapper;
     private final Mapper<DiaryImage, DiaryImageDto> diaryImageMapper;
     private final DiaryImageService diaryImageService;
-    private final RabbitMQSender rabbitMQSender;
 
     @Operation(summary = "Get diaries by user ID", description = "Retrieve a paginated list of diaries for a specific user.")
     @ApiResponses(value = {
@@ -60,6 +62,17 @@ public class DiaryController {
         return foundDiaries.map(diaryMapper::mapTo);
     }
 
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @GetMapping(path = "/user/{userId}")
+    public Page<LocalDateTime> getDiaryCreatedAtByUserId(
+            @PathVariable("userId") UUID userId,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        log.info("Getting diaries created date by userId: {}", userId);
+        Page<DiaryEntity> foundDiaries = diaryService.findByUserId(userId, pageable);
+        return foundDiaries.map(DiaryEntity::getCreatedAt);
+    }
+
     @Operation(summary = "Get diary by ID", description = "Retrieve a specific diary by its ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of diary", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DiaryDto.class))),
@@ -68,7 +81,7 @@ public class DiaryController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(schema = @Schema())})
     })
     @PreAuthorize("#userId.toString() == authentication.name")
-    @GetMapping(path = "{diaryId}/user/{userId}")
+    @GetMapping(path = "{diaryId}/user/{userId}/created-dates")
     public ResponseEntity<DiaryDto> getDiaryById(
             @PathVariable("userId") UUID userId,
             @PathVariable("diaryId") UUID diaryId
@@ -99,6 +112,24 @@ public class DiaryController {
             log.info("Diary found: {}", foundDiary.get().toString());
             DiaryDto diaryDto = diaryMapper.mapTo(foundDiary.get());
             return new ResponseEntity<>(diaryDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @GetMapping(path = "/user/{userId}/{date}/is-analyzed")
+    public ResponseEntity<IsAnalysisDto> checkIsDiaryAnalyzed(
+            @PathVariable("userId") UUID userId,
+            @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    ) {
+        Optional<DiaryEntity> foundDiary = diaryService.findByUserIdAndDate(userId, currentDate);
+
+        if (foundDiary.isPresent()) {
+            log.info("Diary found: {}", foundDiary.get().toString());
+            IsAnalysisDto isAnalysisDto = IsAnalysisDto.builder()
+                    .analyzed(foundDiary.get().isAnalyzed())
+                    .build();
+            return new ResponseEntity<>(isAnalysisDto, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

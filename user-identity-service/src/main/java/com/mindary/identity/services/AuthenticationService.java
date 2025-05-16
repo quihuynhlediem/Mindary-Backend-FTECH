@@ -12,7 +12,7 @@ public interface AuthenticationService {
     String generateAccessToken(UserDetails userDetails);
     String generateRefreshToken(UserDetails userDetails);
     UserDetails validateToken(String token);
-    UserDetails registerUser(String userName, String password, String email, String publicKey, String salt, String encryptedPrivateKey, String privateKeyIv, User.UserRole userRole);
+    UserDetails registerUser(String userName, String firstName, String lastName, String password, String email, String publicKey, String salt, String encryptedPrivateKey, String privateKeyIv, User.UserRole userRole);
     VerifyTokenResponse verifyAccessToken(String token);
     Claims extractAllClaims(String token);
 

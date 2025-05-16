@@ -12,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class AuthResponse {
+    private String username;
     private String accessToken;
     private String refreshToken;
     private UUID userId;
