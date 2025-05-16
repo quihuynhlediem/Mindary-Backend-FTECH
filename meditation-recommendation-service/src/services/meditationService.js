@@ -33,19 +33,35 @@ const loadData = async (page, limit) => {
 
 const getRecommendations = async (userId, date) => {
     const analysis = await getDiaryAnalysis(userId, date);
-    const question = await buildSearchPrompt(analysis);
-    // console.log("Question:", question);
-    const embedding = await embeddings.embedQuery(question);
-    const retrievedMeditations = await vectorStore.similaritySearchVectorWithScore(embedding, 3);
 
-    // const result = retrievedMeditations.map(meditation => {
+    const question = await buildSearchPrompt(analysis);
+
+    // const embedding = await embeddings.embedQuery(question);
+    // const searchResultWithScore = await vectorStore.similaritySearchVectorWithScore(embedding, 3);
+    // const result = searchResultWithScore.map(([meditation, score]) => {
     //     return {
     //         title: meditation.metadata.title,
+    //         author: meditation.metadata.author,
+    //         media_url: meditation.metadata.media_url,
+    //         media_length: meditation.metadata.media_length,
+    //         picture_url: meditation.metadata.picture_url,
     //         intention: meditation.metadata.intention,
     //     }
     // })
-    console.log("Recommended meditation:", retrievedMeditations);
-    return retrievedMeditations;
+    const searchResult = await vectorStore.similaritySearch(question, 3);
+    const result = searchResult.map(meditation => {
+        return {
+            title: meditation.metadata.title,
+            author: meditation.metadata.author,
+            media_url: meditation.metadata.media_url,
+            media_length: meditation.metadata.media_length,
+            picture_url: meditation.metadata.picture_url,
+            intention: meditation.metadata.intention,
+        }
+    })
+
+
+    return result;
 };
 
 
@@ -150,23 +166,38 @@ const createDocumentFromResource = (meditations) => {
 
 
 const getDiaryAnalysis = async (userId, date) => {
-    // Parse the date and create a range for the whole day
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0); // Start of the day
-    const endDate = new Date(date);
-    endDate.setHours(23, 59, 59, 999); // End of the day
+    try {
+        // Parse the date and create a range for the whole day
+        const startDate = new Date(date);
+        startDate.setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(date);
+        endDate.setHours(23, 59, 59, 999); // End of the day
 
-    const analysis = await Analysis
-        .findOne({
-            userId: userId,
-            createdAt: {
-                $gte: startDate, // Greater than or equal to start of day
-                $lte: endDate,   // Less than or equal to end of day
-            },
-        })
-        .select("-_id  emotionObjects symptomObjects  correlationObjects");
-        
-    return analysis;
+        const analysis = await Analysis
+            .findOne({
+                userId: userId,
+                createdAt: {
+                    $gte: startDate, // Greater than or equal to start of day
+                    $lte: endDate,   // Less than or equal to end of day
+                },
+            }, {
+                emotionObjects: 1,
+                symptomObjects: 1,
+                correlationObjects: 1,
+            })
+            .lean() // Add lean() for better performance
+        // .maxTimeMS(30000); // Increase timeout to 30 seconds
+
+        if (!analysis) {
+            console.log(`No analysis found for user ${userId} on ${date}`);
+            return null;
+        }
+
+        return analysis;
+    } catch (error) {
+        console.error(`Error fetching analysis for user ${userId} on ${date}:`, error);
+        throw new Error('Failed to fetch diary analysis from database');
+    }
 };
 
 
