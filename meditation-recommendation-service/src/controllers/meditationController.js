@@ -64,12 +64,12 @@ const getMeditationById = async (req, res) => {
 
 const getRecommendations = async (req, res) => {
     try {
-        const { userId, date } = req.query;
+        const { userId, diaryId} = req.query;
         if (typeof userId !== 'string' || typeof date !== 'string') {
             return res.status(400).json({ message: 'User ID and date must be strings.' });
         }
 
-        const recommendations = await MeditationService.getRecommendations(userId, date);
+        const recommendations = await MeditationService.getRecommendations(userId, diaryId);
         if (!recommendations) {
             return res.status(404).json({ message: 'Recommended meditation not found' });
         }

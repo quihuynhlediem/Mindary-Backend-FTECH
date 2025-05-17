@@ -235,7 +235,7 @@ public class DiaryController {
         ZoneId zone = ZoneId.of(timezone);
         LocalDate currentDate = LocalDate.now(zone);
 
-        if (!targetDate.equals(currentDate)) {
+        if (targetDate.isAfter(currentDate)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(DiaryDto.builder().content("Target date is not available.").build());
         }

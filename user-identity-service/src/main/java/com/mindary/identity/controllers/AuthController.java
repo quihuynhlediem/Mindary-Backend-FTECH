@@ -50,13 +50,14 @@ public class AuthController {
         UUID userId = extractUserId(userDetails);
         String salt = extractSalt(userDetails);
         String username = extractUsername(userDetails);
-
+        String firstTimeLogin = exactFirstTimeLogin(userDetails) ? "true" : "false";
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
 
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(accessToken)
+                .firstTimeLogin(firstTimeLogin)
                 .refreshToken(refreshToken)
                 .userId(userId)
                 .salt(salt)

@@ -31,8 +31,8 @@ const loadData = async (page, limit) => {
 }
 
 
-const getRecommendations = async (userId, date) => {
-    const analysis = await getDiaryAnalysis(userId, date);
+const getRecommendations = async (userId, diaryId) => {
+    const analysis = await getDiaryAnalysis(userId, diaryId);
 
     const question = await buildSearchPrompt(analysis);
 
@@ -165,21 +165,18 @@ const createDocumentFromResource = (meditations) => {
 };
 
 
-const getDiaryAnalysis = async (userId, date) => {
+const getDiaryAnalysis = async (userId, diaryId) => {
     try {
         // Parse the date and create a range for the whole day
-        const startDate = new Date(date);
-        startDate.setHours(0, 0, 0, 0); // Start of the day
-        const endDate = new Date(date);
-        endDate.setHours(23, 59, 59, 999); // End of the day
+        // const startDate = new Date(date);
+        // startDate.setHours(0, 0, 0, 0); // Start of the day
+        // const endDate = new Date(date);
+        // endDate.setHours(23, 59, 59, 999); // End of the day
 
         const analysis = await Analysis
             .findOne({
                 userId: userId,
-                createdAt: {
-                    $gte: startDate, // Greater than or equal to start of day
-                    $lte: endDate,   // Less than or equal to end of day
-                },
+                diaryId: diaryId,
             }, {
                 emotionObjects: 1,
                 symptomObjects: 1,

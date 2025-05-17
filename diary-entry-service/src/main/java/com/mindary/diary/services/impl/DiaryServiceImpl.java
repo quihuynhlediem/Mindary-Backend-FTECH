@@ -22,6 +22,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Map;
@@ -70,12 +71,16 @@ public class DiaryServiceImpl implements DiaryService {
         // Encrypt AES key with user's public key
         String encryptAESKey = encryptAESKey(aesKeyBytes, publicKey);
 
+        // Change target date to date time
+        LocalDateTime targetDatetime = targetDate.atStartOfDay();
+
         // Saved the user's diary with encrypted content and encrypted AES Key
         DiaryEntity diaryEntity = DiaryEntity.builder()
                 .userId(userId)
                 .content(encryptDiary)
                 .aesKey(encryptAESKey)
                 .aesIv(iv)
+                .createdAt(targetDatetime)
                 .build();
 
         return diaryRepository.save(diaryEntity);
