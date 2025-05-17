@@ -81,7 +81,7 @@ public class DiaryController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(schema = @Schema())})
     })
     @PreAuthorize("#userId.toString() == authentication.name")
-    @GetMapping(path = "{diaryId}/user/{userId}/created-dates")
+    @GetMapping(path = "{diaryId}/user/{userId}")
     public ResponseEntity<DiaryDto> getDiaryById(
             @PathVariable("userId") UUID userId,
             @PathVariable("diaryId") UUID diaryId
@@ -117,7 +117,7 @@ public class DiaryController {
     }
 
     @PreAuthorize("#userId.toString() == authentication.name")
-    @GetMapping(path = "/user/{userId}/{date}/is-analyzed")
+    @GetMapping(path = "/user/{userId}/{date}/check-is-analyzed")
     public ResponseEntity<IsAnalysisDto> checkIsDiaryAnalyzed(
             @PathVariable("userId") UUID userId,
             @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
@@ -128,8 +128,26 @@ public class DiaryController {
             log.info("Diary found: {}", foundDiary.get().toString());
             IsAnalysisDto isAnalysisDto = IsAnalysisDto.builder()
                     .analyzed(foundDiary.get().isAnalyzed())
+                    .diaryId(foundDiary.get().getId())
                     .build();
             return new ResponseEntity<>(isAnalysisDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PreAuthorize("#userId.toString() == authentication.name")
+    @PostMapping(path = "/user/{userId}/{date}/mark-is-analyzed")
+    public ResponseEntity<String> markDiaryIsAnalyzed(
+            @PathVariable("userId") UUID userId,
+            @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    ) {
+        Optional<DiaryEntity> foundDiary = diaryService.findByUserIdAndDate(userId, currentDate);
+
+        if (foundDiary.isPresent()) {
+            log.info("Diary found: {}", foundDiary.get().toString());
+            foundDiary.get().setAnalyzed(true);
+            diaryService.save(foundDiary.get());
+            return new ResponseEntity<>("Success", HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
