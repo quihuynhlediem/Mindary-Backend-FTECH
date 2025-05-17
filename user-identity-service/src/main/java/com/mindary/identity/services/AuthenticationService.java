@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 
 public interface AuthenticationService {
+    Claims extractTokenInfo(String token);
     UserDetails authenticate(String username, String password);
     String generateAccessToken(UserDetails userDetails);
     String generateRefreshToken(UserDetails userDetails);

@@ -51,6 +51,7 @@ public class AuthController {
         String salt = extractSalt(userDetails);
         String username = extractUsername(userDetails);
 
+
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
 
@@ -88,12 +89,14 @@ public class AuthController {
 
         UUID userId = extractUserId(userDetails);
         String salt = extractSalt(userDetails);
+        String firstTimeLogin = exactFirstTimeLogin(userDetails) ? "true" : "false";
 
         String accessToken = authenticationService.generateAccessToken(userDetails);
         String refreshToken = authenticationService.generateRefreshToken(userDetails);
 
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(accessToken)
+                .firstTimeLogin(firstTimeLogin)
                 .refreshToken(refreshToken)
                 .userId(userId)
                 .salt(salt)
@@ -150,6 +153,10 @@ public class AuthController {
     }
 
     private String extractUsername(UserDetails userDetails) {
-        return ((SystemUserDetails) userDetails).getUsername();
+        return ((SystemUserDetails) userDetails).getUserNameReal();
+    }
+
+    private boolean exactFirstTimeLogin(UserDetails userDetails) {
+        return ((SystemUserDetails) userDetails).getFirstTimeLogin();
     }
 }

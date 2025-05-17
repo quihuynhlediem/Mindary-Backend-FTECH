@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @SuperBuilder
 public class CustomerDto extends UserDto {
-    private String userName;
+    private String username;
     private String firstName;
     private String lastName;
     private String age;

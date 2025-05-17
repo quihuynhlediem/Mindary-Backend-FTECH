@@ -136,12 +136,12 @@ public class DiaryController {
     }
 
     @PreAuthorize("#userId.toString() == authentication.name")
-    @PostMapping(path = "/user/{userId}/{date}/mark-is-analyzed")
+    @PostMapping(path = "/{diaryId}/user/{userId}/mark-is-analyzed")
     public ResponseEntity<String> markDiaryIsAnalyzed(
             @PathVariable("userId") UUID userId,
-            @PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+            @PathVariable("diaryId") UUID diaryId
     ) {
-        Optional<DiaryEntity> foundDiary = diaryService.findByUserIdAndDate(userId, currentDate);
+        Optional<DiaryEntity> foundDiary = diaryService.findOne(diaryId);
 
         if (foundDiary.isPresent()) {
             log.info("Diary found: {}", foundDiary.get().toString());
@@ -188,7 +188,6 @@ public class DiaryController {
     public ResponseEntity<AnalysisResultDto> createDiary(
             @PathVariable("userId") UUID userId,
             @RequestParam("diary") String diary,
-            @RequestParam("ai") String ai,
             @RequestParam(value = "images", required = false) List<MultipartFile> photos,
             @RequestParam(value = "timezone") String timezone
     ) throws Exception {
@@ -206,14 +205,7 @@ public class DiaryController {
         Set<DiaryImage> savedImages = diaryImageService.uploadAndSaveImages(photos, savedDiary);
         savedDiary.setImages(savedImages);
 
-        // Analyze it if user allows
-        if (ai.equals("yes")) {
-//            rabbitMQSender.sendDiary(savedDiary);
-            AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
-            return ResponseEntity.status(HttpStatus.CREATED).body(analysisResultDto);
-        }
-
-        // If user not allow analyzed just store
+        // Store user journal
         AnalysisResultDto analysisResultDto =  AnalysisResultDto.builder()
                 .diaryId(savedDiary.getId())
                 .userId(userId)
@@ -257,8 +249,6 @@ public class DiaryController {
         DiaryEntity savedDiary = diaryService.create(userId, diary, targetDate);
         Set<DiaryImage> savedDiaryImages = diaryImageService.uploadAndSaveImages(images, savedDiary);
         savedDiary.setImages(savedDiaryImages);
-
-//        AnalysisResultDto analysisResultDto = diaryService.analyze(savedDiary);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(diaryMapper.mapTo(savedDiary));
     }

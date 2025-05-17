@@ -31,7 +31,7 @@ public class SystemUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
     @Override
@@ -59,4 +59,12 @@ public class SystemUserDetails implements UserDetails {
     }
 
     public String getSalt() {return user.getRandomSalt();}
+
+    public Boolean getFirstTimeLogin() {
+        return user.getFirstTimeLogin();
+    }
+
+    public String getUserNameReal() {
+        return user.getUsername();
+    }
 }

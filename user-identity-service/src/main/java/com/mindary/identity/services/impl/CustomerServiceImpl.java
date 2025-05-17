@@ -67,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findById(id).map(existingCustomer -> {
             Optional.ofNullable(customerDto.getEmail()).ifPresent(existingCustomer::setEmail);
             Optional.ofNullable(customerDto.getProfileImage()).ifPresent(existingCustomer::setProfileImage);
-            Optional.ofNullable(customerDto.getUserName()).ifPresent(existingCustomer::setUsername);
+            Optional.ofNullable(customerDto.getUsername()).ifPresent(existingCustomer::setUsername);
             Optional.ofNullable(customerDto.getGender()).ifPresent(existingCustomer::setGender);
             Optional.ofNullable(customerDto.getAge()).ifPresent(existingCustomer::setAge);
 
@@ -84,6 +84,8 @@ public class CustomerServiceImpl implements CustomerService {
 
                 LocalTime reminderTime = LocalTime.of(hour, minute);
                 existingCustomer.setReminderTime(reminderTime);
+
+                existingCustomer.setFirstTimeLogin(false);
             } catch (DateTimeException e) {
                 throw new IllegalArgumentException("Invalid reminder time format", e);
             }

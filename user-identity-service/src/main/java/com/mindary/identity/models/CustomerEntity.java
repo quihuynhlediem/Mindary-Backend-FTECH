@@ -34,6 +34,9 @@ public class CustomerEntity extends User {
     @Column(name = "gender")
     private String gender;
 
+    @Column(name = "firstTimeLogin")
+    private Boolean firstTimeLogin = true;
+
     @Column(name = "reminder_time")
     private LocalTime reminderTime;
 

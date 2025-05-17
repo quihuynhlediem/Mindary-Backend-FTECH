@@ -51,6 +51,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
+    public Claims extractTokenInfo(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    @Override
     public UserDetails authenticate(String email, String password) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
