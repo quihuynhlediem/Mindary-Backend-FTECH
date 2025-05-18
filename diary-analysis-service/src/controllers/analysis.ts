@@ -4,12 +4,12 @@ import { analyzeDiaryEntry, getDiaryAnalysis, deleteDiaryAnalysis, getEmotionLev
 export const getAnalysisResult = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.params.userId as string;
-        const date = req.params.date as string;
-        if (!date) {
-            res.status(400).json({ message: "Date is in the future" });
-            return;
-        }
-        const result = await getDiaryAnalysis(userId, date);
+        const diaryId = req.params.diaryId as string;
+        // if (!date) {
+        //     res.status(400).json({ message: "Date is in the future" });
+        //     return;
+        // }
+        const result = await getDiaryAnalysis(userId, diaryId);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message || "Internal server error" });
@@ -66,7 +66,7 @@ export const deleteAnalysisResult = async (req: Request, res: Response): Promise
     }
 };
 
-export const getEmotionLevel = async (req: Request, res: Response): Promise<void> => {
+export const  getEmotionLevel = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.params.userId as string;
         const date = req.params.date as string;

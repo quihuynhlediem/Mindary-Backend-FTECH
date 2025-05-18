@@ -53,7 +53,7 @@ public class DiaryEntity {
     )
     private Set<DiaryImage> images;
 
-    @CreationTimestamp
+//    @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

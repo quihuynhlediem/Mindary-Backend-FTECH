@@ -6,19 +6,20 @@ import { uploadToS3 } from '../lib/awsConfiguration';
 import Analysis from '../models/Analysis';
 
 // Get diary analysis by diaryId
-export const getDiaryAnalysis = async (userId: string, date: string) => {
-    // Parse the date and create a range for the whole day
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0); // Start of the day
-    const endDate = new Date(date);
-    endDate.setHours(23, 59, 59, 999); // End of the day
+export const getDiaryAnalysis = async (userId: string, diaryId: string) => {
+    // // Parse the date and create a range for the whole day
+    // const startDate = new Date(date);
+    // startDate.setHours(0, 0, 0, 0); // Start of the day
+    // const endDate = new Date(date);
+    // endDate.setHours(23, 59, 59, 999); // End of the day
 
     const diaries = await Analysis.findOne({
         userId: userId,
-        createdAt: {    
-            $gte: startDate, // Greater than or equal to start of day
-            $lte: endDate,   // Less than or equal to end of day
-        },
+        diaryId: diaryId
+        // createdAt: {
+        //     $gte: startDate, // Greater than or equal to start of day
+        //     $lte: endDate,   // Less than or equal to end of day
+        // },
     });
     return diaries;
 };
