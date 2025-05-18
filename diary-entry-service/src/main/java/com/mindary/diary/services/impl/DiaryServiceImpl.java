@@ -157,7 +157,7 @@ public class DiaryServiceImpl implements DiaryService {
         return diaryRepository.findByUserIdAndCreatedAtBetween(
                 userId,
                 targetDate.atStartOfDay(),
-                targetDate.plusDays(1).atStartOfDay().minusNanos(1)
+                targetDate.plusDays(1).atStartOfDay().minusMinutes(1)
         );
     }
 
