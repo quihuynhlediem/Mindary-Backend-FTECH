@@ -1,5 +1,5 @@
-import express from 'express';
-import MeditationController from '../controllers/meditationController.js';
+import express from "express";
+import MeditationController from "../controllers/meditationController.js";
 
 const router = express.Router();
 
@@ -44,14 +44,19 @@ const router = express.Router();
  *         description: Internal server error.
  */
 
-
-router.get('/meditations/get-all-meditation', MeditationController.getAllMeditations);
-router.get('/meditations/load-data', MeditationController.loadData);
-router.get('/meditations/:id', MeditationController.getMeditationById);
-router.post("/meditations/get-recommendations", MeditationController.getRecommendations);
-router.post('/meditations/create', MeditationController.createMeditation);
+router.get(
+	"/meditations/get-all-meditation",
+	MeditationController.getAllMeditations
+);
+router.get("/meditations/load-data", MeditationController.loadData);
+router.get("/meditations/:id", MeditationController.getMeditationById);
+router.post(
+	"/meditations/get-recommendations",
+	MeditationController.getRecommendations
+);
+router.post("/meditations/create", MeditationController.createMeditation);
 // router.post('/meditation/recommended', MeditationController.getRecommendedMeditation);
-router.delete('/meditations/delete/:id', MeditationController.deleteMeditation);
+router.delete("/meditations/delete/:id", MeditationController.deleteMeditation);
 
 //router.use('/', router);
 
