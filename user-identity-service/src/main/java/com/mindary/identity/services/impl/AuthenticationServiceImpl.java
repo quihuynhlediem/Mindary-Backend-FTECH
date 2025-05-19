@@ -82,6 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .publicKey(publicKey)
                     .encryptedPrivateKey(encryptedPrivateKey)
                     .privateKeyIv(privateKeyIv)
+                    .firstTimeLogin(true)
                     .build();
             customerService.save(customer);
         }
